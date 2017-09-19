@@ -6,8 +6,8 @@ public class MaterialPickup : MonoBehaviour {
 
     private Movemnet player;
     public int materialNo;
-    
 
+    
 	// Use this for initialization
 	void Start () {
 	}

@@ -4474,6 +4474,51 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1929879271
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1929879273}
+  - component: {fileID: 1929879272}
+  m_Layer: 0
+  m_Name: BombCraftingHandler
+  m_TagString: BombList
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1929879272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1929879271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cb23fa11e9dd8246a12dee151ce24db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bombs:
+  - {fileID: 1928816966457890, guid: dc57b5f91ef9e2346b3eb8e8b9582e38, type: 2}
+  - {fileID: 1515465913196736, guid: 63e7636c87beb8f44ae103f7daa3fa81, type: 2}
+  - {fileID: 1928816966457890, guid: dc57b5f91ef9e2346b3eb8e8b9582e38, type: 2}
+  - {fileID: 1928816966457890, guid: dc57b5f91ef9e2346b3eb8e8b9582e38, type: 2}
+--- !u!4 &1929879273
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1929879271}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -23.333538, y: -9.694126, z: 6.039315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 46
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1964418476
 GameObject:
   m_ObjectHideFlags: 0
@@ -4692,11 +4737,12 @@ MonoBehaviour:
   throwRechargeTime: 3
   materialCount: 00000000000000000000000000000000
   activeCraftingMaterial: 00000000
-  material1Count: {fileID: 928267124}
-  material2Count: {fileID: 389241529}
-  material3Count: {fileID: 89565028}
-  material4Count: {fileID: 1820898872}
-  bomb: {fileID: 1928816966457890, guid: dc57b5f91ef9e2346b3eb8e8b9582e38, type: 2}
+  textForHUD:
+  - {fileID: 928267124}
+  - {fileID: 389241529}
+  - {fileID: 89565028}
+  - {fileID: 1820898872}
+  bombHandlerReference: {fileID: 1929879271}
 --- !u!23 &2097938182
 MeshRenderer:
   m_ObjectHideFlags: 0

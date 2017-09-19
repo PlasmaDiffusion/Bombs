@@ -18,32 +18,35 @@ public class Movemnet : MonoBehaviour {
     //Material variables for crafting
     public int[] materialCount;
     public bool[] activeCraftingMaterial;
+    public Text[] textForHUD;
 
     //Material Pickup Count for the HUD. (Can't be made into array...?)
-    public Text material1Count;
-    public Text material2Count;
-    public Text material3Count;
-    public Text material4Count;
 
-    public GameObject bomb;
+    public GameObject bombHandlerReference;
+
+    private GameObject bomb;
+    private BombCraftingHandler bombHandler;
+    
+
 
     // Use this for initialization
     void Start () {
 
         m_Rigidbody = gameObject.GetComponent<Rigidbody>(); //Get rigid body for movemnt stuff below
         canThrow = true;
+       bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
+       bombHandler  = bombHandlerReference.GetComponent<BombCraftingHandler>();
 
 
         //Inventory stuff
         for (int i = 0; i < 4; i++)
         {
             materialCount[i] = 0;
+            textForHUD[0].text = materialCount[i].ToString();
             activeCraftingMaterial[i] = false;
+
         }
-        material1Count.text = materialCount[0].ToString();
-        material2Count.text = materialCount[1].ToString();
-        material3Count.text = materialCount[2].ToString();
-        material4Count.text = materialCount[3].ToString();
+       
     }
 	
 	// Update is called once per frame
@@ -79,31 +82,10 @@ public class Movemnet : MonoBehaviour {
         //Throw a bomb
         if (Input.GetKey(KeyCode.Space) && canThrow)
         {
-            //m_audioSource.Play();
-            //m_Rigidbody.velocity += transform.up * m_JumpSpeed;
-            //canThrow = false;
-
-            Transform bombTransform = transform;
-
-
-            //Debug.Log(bombTransform.position.ToString());
-
-            Vector3 forwardOffset = transform.forward;
-       
-            bombTransform.position.Set(bombTransform.position.x + forwardOffset.x, bombTransform.position.y + 5.0f, bombTransform.position.z + forwardOffset.z);
-
-
-            //Debug.Log(transform.forward.ToString());
-
-            GameObject newBomb = Instantiate(bomb, forwardOffset + transform.position, transform.rotation);
-
-            Vector3 newVelocity = forwardOffset.normalized;
-            newVelocity.y += 5.0f;
-
-            newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
-
             //Add crafting modifications here!
-            craftBomb(newBomb);
+
+
+            craftBomb();
 
             //Now prevent more from being thrown for a moment
             throwRecharge = throwRechargeTime;
@@ -156,16 +138,16 @@ public class Movemnet : MonoBehaviour {
             switch (materialNo)
             {
                 case 0:
-                    material1Count.color = new Color(0.0f, 0.0f, 1.0f);
+                    textForHUD[0].color = new Color(0.0f, 0.0f, 1.0f);
                     break;
                 case 1:
-                    material2Count.color = new Color(1.0f, 0.0f, 0.0f);
+                    textForHUD[1].color = new Color(1.0f, 0.0f, 0.0f);
                     break;
                 case 2:
-                    material3Count.color = new Color(1.0f, 1.0f, 0.0f);
+                    textForHUD[2].color = new Color(1.0f, 1.0f, 0.0f);
                     break;
                 case 3:
-                    material4Count.color = new Color(0.0f, 1.0f, 0.0f);
+                    textForHUD[3].color = new Color(0.0f, 1.0f, 0.0f);
                     break;
             }
 
@@ -175,21 +157,7 @@ public class Movemnet : MonoBehaviour {
             activeCraftingMaterial[materialNo] = false;
 
             //Make text white for unactive materials
-            switch (materialNo)
-            {
-                case 0:
-                    material1Count.color = new Color(1.0f, 1.0f, 1.0f);
-                    break;
-                case 1:
-                    material2Count.color = new Color(1.0f, 1.0f, 1.0f);
-                    break;
-                case 2:
-                    material3Count.color = new Color(1.0f, 1.0f, 1.0f);
-                    break;
-                case 3:
-                    material4Count.color = new Color(1.0f, 1.0f, 1.0f);
-                    break;
-            }
+            textForHUD[materialNo].color = new Color(1.0f, 1.0f, 1.0f);
         }
 
         //Make sure number is correct on HUD
@@ -215,30 +183,39 @@ public class Movemnet : MonoBehaviour {
 
     public void setMaterialCountText(int slotNumber)
     {
-        switch (slotNumber)
-        {
-            case 0:
-
-                material1Count.text = materialCount[slotNumber].ToString();
-                break;
-            case 1:
-                material2Count.text = materialCount[slotNumber].ToString();
-                break;
-            case 2:
-                material3Count.text = materialCount[slotNumber].ToString();
-                break;
-            case 3:
-                material4Count.text = materialCount[slotNumber].ToString();
-                break;
-        }
-
+        textForHUD[slotNumber].text = materialCount[slotNumber].ToString();
 
     }
 
     //Make a bomb
-    void craftBomb(GameObject newBomb)
+    void craftBomb()
     {
+        //First get a few transformations ready for spawning the bomb
+        Transform bombTransform = transform;
+        
+
+        Vector3 forwardOffset = transform.forward;
+
+        bombTransform.position.Set(bombTransform.position.x + forwardOffset.x, bombTransform.position.y + 5.0f, bombTransform.position.z + forwardOffset.z);
+
+        
+       
+        //Now see what bomb the player is going to craft
+        bomb = bombHandler.getSpecificBomb(activeCraftingMaterial);
+
+        //The new bomb is ready to be spawned!
+        GameObject newBomb = Instantiate(bomb, forwardOffset + transform.position, transform.rotation);
+
+
+        Vector3 newVelocity = forwardOffset.normalized;
+        newVelocity.y += 5.0f; //Make it arc upwards a little
+
+        newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
+
+
         Bomb craftedBomb = newBomb.GetComponent<Bomb>();
+
+        //Basic parameters all bombs have are changed here, but not the type of bomb.
         if (activeCraftingMaterial[0])
         {
             Debug.Log("0");
@@ -282,7 +259,7 @@ public class Movemnet : MonoBehaviour {
 
             setMaterialCountText(2);
         }
-        if (activeCraftingMaterial[3] == true)
+        if (activeCraftingMaterial[3])
         {
 
             Debug.Log("3");
