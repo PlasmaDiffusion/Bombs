@@ -51,8 +51,8 @@ public class Movemnet : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-        if(Input.GetKey(KeyCode.W))
+
+        /*if(Input.GetKey(KeyCode.W))
         {
             m_Rigidbody.velocity += transform.forward * m_Speed * Time.deltaTime;
             float l_y = m_Rigidbody.velocity.y;
@@ -67,7 +67,7 @@ public class Movemnet : MonoBehaviour {
             m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
             m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
         }
-
+        */
         if (Input.GetKey(KeyCode.D))
         {
             m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
@@ -78,9 +78,17 @@ public class Movemnet : MonoBehaviour {
         {
             m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
         }
+        
+        float velocityForward = Input.GetAxis("Vertical") * m_Speed * Time.deltaTime;
+        float velocityRight = Input.GetAxis("Horizontal") * m_Speed * Time.deltaTime;
+       // m_Rigidbody.velocity += new Vector3 (velocityRight, 0.0f, velocityForward);
+
+        m_Rigidbody.velocity += (transform.forward * velocityForward);
+
+        //m_Rigidbody.velocity += new Vector3 (velocityRight, 0.0f, 0.0f);
 
         //Throw a bomb
-        if (Input.GetKey(KeyCode.Space) && canThrow)
+        if ((Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0) && canThrow)
         {
             //Add crafting modifications here!
 
@@ -103,24 +111,24 @@ public class Movemnet : MonoBehaviour {
         }
 
         //Toggle crafting material 0
-        if (Input.GetKeyUp(KeyCode.UpArrow))
+        if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetAxis("D-PadVertical") == 1)
         {
             toggleCraftingMaterials(0);
         }
 
         //Toggle crafting material 1
-        if (Input.GetKeyUp(KeyCode.DownArrow))
+        if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetAxis("D-PadVertical") == -1)
         {
             toggleCraftingMaterials(1);
         }
 
         //Toggle crafting material 2
-        if (Input.GetKeyUp(KeyCode.RightArrow))
+        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetAxis("D-PadHorizontal") == 1)
         {
             toggleCraftingMaterials(2);
         }
         //Toggle crafting material 3
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
+        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetAxis("D-PadHorizontal") == -1)
         {
             toggleCraftingMaterials(3);
         }

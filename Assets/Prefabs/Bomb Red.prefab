@@ -113,8 +113,8 @@ MonoBehaviour:
   newExplosion: {fileID: 1402890763781832, guid: fe467e78783807f4196b442d01e32b41,
     type: 2}
   explosionLifetime: 3
-  explosionScaleSpeed: {x: 8, y: 8, z: 8}
-  explosionScaleLimit: 20
+  explosionScaleSpeed: {x: 4, y: 4, z: 4}
+  explosionScaleLimit: 15
 --- !u!135 &135784496408530502
 SphereCollider:
   m_ObjectHideFlags: 1

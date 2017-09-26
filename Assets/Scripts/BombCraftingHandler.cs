@@ -28,13 +28,8 @@ public class BombCraftingHandler : MonoBehaviour {
             else ingredientString += "-";
 
         }
-
-        if (usingMaterial[0] && usingMaterial[1]) bombToUse = 1;
-
-        if (usingMaterial[2] && usingMaterial[3]) bombToUse = 2;
-
-        if (usingMaterial[2] && usingMaterial[1]) bombToUse = 1;
-
+        if (ingredientString == "-++-") bombToUse = 1;
+        
 
         return bombs[bombToUse];
     }
