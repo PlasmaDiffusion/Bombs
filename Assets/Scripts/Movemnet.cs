@@ -46,7 +46,7 @@ public class Movemnet : MonoBehaviour {
 	public int[] materialID;
     public bool[] activeCraftingMaterial;
     public Text[] textForHUD;
-
+    public Image selectedBombImage;
 
     public GameObject bombHandlerReference;
 
@@ -121,6 +121,12 @@ public class Movemnet : MonoBehaviour {
 		}
 
 		//------------------------------------------------------------------------------
+
+        //Cycle through inventory
+        if (Input.GetButtonUp("CycleRight"))
+        {
+            selectedBombImage.transform.position.Set(selectedBombImage.transform.position.x + 32.0f, selectedBombImage.transform.position.y, selectedBombImage.transform.position.z);
+        }
 
 		//Craft a bomb
 		if (Input.GetKey(KeyCode.LeftShift) || Input.GetButtonUp("Confirm"))
