@@ -6,7 +6,6 @@ public class MaterialPickup : MonoBehaviour {
 
     private Movemnet player;
     public int materialNo;
-
     
 	// Use this for initialization
 	void Start () {
@@ -17,15 +16,47 @@ public class MaterialPickup : MonoBehaviour {
 		
 	}
 
+
     void OnTriggerEnter(Collider other)
     {
        //Give player item to craft with
 
         if (other.gameObject.CompareTag("Player"))
         {
+
             player = other.gameObject.GetComponent<Movemnet>();
-            player.materialCount[materialNo] += 1;
-            player.setMaterialCountText(materialNo);
+
+			//First see if the player has the material id in the inventory
+			for (int i = 0; i < 4; i++)
+			{
+
+				//If they do add onto it
+				if (player.materialID[i] == materialNo)
+				{
+					player.materialCount[i] += 1;
+					player.setMaterialCountText(i);
+
+					break;
+				}
+
+
+
+			}
+
+
+			//If not then find an empty slot to add it to
+			for (int i = 0; i < 4; i++) 
+			{
+				if (player.materialID[i] == 0)
+				{
+					player.materialID [i] = materialNo;
+					player.materialCount[i] += 1;
+					player.setMaterialCountText(i);
+
+					break;
+				}
+			}
+
 
             Destroy(gameObject);
         }

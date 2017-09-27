@@ -15,19 +15,45 @@ public class Movemnet : MonoBehaviour {
     private float throwRecharge;
     //AudioSource m_audioSource;
 
+
+	//Structure for all of a bomb's parameters.
+	struct BombInventory
+	{
+		public bool hasIngredient;
+
+		public int count; //In case we want a stackable inventory?
+
+		//Generic parameters
+		public float time;
+		public Vector3 explosionScaleSpeed;
+		public float explosionScaleLimit;
+		public float explosionLifetime;
+
+		//Special on/off parameters
+		public bool fire;
+		public bool freeze;
+		public bool smoke;
+	}
+
+	//Array for inventory.
+	BombInventory[] craftedBombs = new BombInventory[5];
+
+	//Current bomb being crafted.
+	BombInventory newerBomb;
+
     //Material variables for crafting
     public int[] materialCount;
+	public int[] materialID;
     public bool[] activeCraftingMaterial;
     public Text[] textForHUD;
 
-    //Material Pickup Count for the HUD. (Can't be made into array...?)
 
     public GameObject bombHandlerReference;
 
     private GameObject bomb;
     private BombCraftingHandler bombHandler;
     
-
+	int selectedBomb;
 
     // Use this for initialization
     void Start () {
@@ -36,12 +62,13 @@ public class Movemnet : MonoBehaviour {
         canThrow = true;
        bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
        bombHandler  = bombHandlerReference.GetComponent<BombCraftingHandler>();
-
+		selectedBomb = 0;
 
         //Inventory stuff
         for (int i = 0; i < 4; i++)
         {
             materialCount[i] = 0;
+			materialID[i] = 0;
             textForHUD[0].text = materialCount[i].ToString();
             activeCraftingMaterial[i] = false;
 
@@ -66,27 +93,60 @@ public class Movemnet : MonoBehaviour {
             float l_y = m_Rigidbody.velocity.y;
             m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
             m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
-        }
-        */
-        if (Input.GetKey(KeyCode.D))
-        {
-            m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
-        }
+        }*/
 
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
-        }
         
+		//Movement input
         float velocityForward = Input.GetAxis("Vertical") * m_Speed * Time.deltaTime;
         float velocityRight = Input.GetAxis("Horizontal") * m_Speed * Time.deltaTime;
-       // m_Rigidbody.velocity += new Vector3 (velocityRight, 0.0f, velocityForward);
 
         m_Rigidbody.velocity += (transform.forward * velocityForward);
+		m_Rigidbody.velocity += (transform.right * velocityRight);
 
-        //m_Rigidbody.velocity += new Vector3 (velocityRight, 0.0f, 0.0f);
+		//Rotation/camera input
+		float rotate = Input.GetAxis("RightStickH");
 
+		if (rotate > 0.6f || rotate < -0.6f) m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
+
+
+		if (Input.GetKey(KeyCode.L))
+		{
+			m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
+		}
+
+
+		if (Input.GetKey(KeyCode.J))
+		{
+			m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
+		}
+
+		//------------------------------------------------------------------------------
+
+		//Craft a bomb
+		if (Input.GetKey(KeyCode.LeftShift) || Input.GetButtonUp("Confirm"))
+			{
+				if (newerBomb.hasIngredient)
+				{
+
+					//Find an empty slot to add the new bomb into
+					for (int i = 0; i < craftedBombs.Length; i++)
+					{
+						if (craftedBombs[i].count == 0)
+						{
+						craftedBombs[i] = newerBomb;
+						craftedBombs[i].count++;
+
+						//Erase current bomb
+						newerBomb = default(BombInventory);
+	
+						break;
+						}
+					}
+				
+				}
+
+			}
+		//------------------------------------------------------------------------------
         //Throw a bomb
         if ((Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0) && canThrow)
         {
@@ -282,5 +342,7 @@ public class Movemnet : MonoBehaviour {
             setMaterialCountText(3);
         }
     }
+
+
 
 }
