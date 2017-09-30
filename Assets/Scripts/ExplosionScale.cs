@@ -5,10 +5,9 @@ using UnityEngine;
 public class ExplosionScale : MonoBehaviour
 {
 
-    public Vector3 scaleSpeed;
-    public float scaleLengthLimit; //How big the explosion can get
     public bool expanding; // Is the explosion scaling itself up?
-    public float extraLifetime; //How long it takes for the explosion to disppear once it has reached its scale limit
+ 
+    public BombAttributes.BombData explosionAttributes;
 
     // Use this for initialization
     void Start()
@@ -28,11 +27,11 @@ public class ExplosionScale : MonoBehaviour
         {
             //Increase explosion scale
             Vector3 currentScale = transform.localScale;
-            currentScale += scaleSpeed * Time.deltaTime;
+            currentScale += explosionAttributes.explosionScaleSpeed * Time.deltaTime;
             transform.localScale = currentScale;
 
             //...Until it's limit is reached, then destroy it
-            if (currentScale.magnitude > scaleLengthLimit) expanding = false;
+            if (currentScale.magnitude > explosionAttributes.explosionScaleLimit) expanding = false;
 
 
         }
@@ -40,21 +39,12 @@ public class ExplosionScale : MonoBehaviour
         {
             //Already scaled up; now wait a brief moment and destroy the explosion
 
-            extraLifetime -= 1.0f * Time.deltaTime;
-            if (extraLifetime < 0.0f) Destroy(gameObject);
+            explosionAttributes.explosionLifetime -= 1.0f * Time.deltaTime;
+            if (explosionAttributes.explosionLifetime < 0.0f) Destroy(gameObject);
 
         }
     }
-
-    public void setExplosionVariables(Vector3 newScaleSpeed, float newScaleLenghtLimit, float newExtraLifetime)
-    {
-        Debug.Log("Setting stuff");
-        scaleSpeed = newScaleSpeed;
-        scaleLengthLimit = newScaleLenghtLimit;
-        extraLifetime = newExtraLifetime;
-
-
-    }
+    
     void OnTriggerEnter(Collider other)
     {
         //Knockback whatever is in the explosion

@@ -13,39 +13,19 @@ public class Movemnet : MonoBehaviour {
     bool canThrow;
     public float throwRechargeTime;
     private float throwRecharge;
-    //AudioSource m_audioSource;
 
+    //Array for inventory.
+    BombAttributes.BombData[] craftedBombs = new BombAttributes.BombData[5];
 
-	//Structure for all of a bomb's parameters.
-	struct BombInventory
-	{
-		public bool hasIngredient;
-
-		public int count; //In case we want a stackable inventory?
-
-		//Generic parameters
-		public float time;
-		public Vector3 explosionScaleSpeed;
-		public float explosionScaleLimit;
-		public float explosionLifetime;
-
-		//Special on/off parameters
-		public bool fire;
-		public bool freeze;
-		public bool smoke;
-	}
-
-	//Array for inventory.
-	BombInventory[] craftedBombs = new BombInventory[5];
-
-	//Current bomb being crafted.
-	BombInventory newerBomb;
+    //Current bomb being crafted.
+    BombAttributes.BombData newerBomb;
 
     //Material variables for crafting
     public int[] materialCount;
 	public int[] materialID;
     public bool[] activeCraftingMaterial;
     public Text[] textForHUD;
+    public Text[] textForInventory;
     public Image selectedBombImage;
 
     public GameObject bombHandlerReference;
@@ -73,7 +53,14 @@ public class Movemnet : MonoBehaviour {
             activeCraftingMaterial[i] = false;
 
         }
-       
+
+        //Make sure bomb inventory structure stuff are at default values.
+        for (int i = 0; i < 5; i++)
+        {
+            makeBombDefaults(ref craftedBombs[i]);
+        }
+        makeBombDefaults(ref newerBomb);
+        setInventoryText();
     }
 	
 	// Update is called once per frame
@@ -125,11 +112,34 @@ public class Movemnet : MonoBehaviour {
         //Cycle through inventory
         if (Input.GetButtonUp("CycleRight"))
         {
-            selectedBombImage.transform.position.Set(selectedBombImage.transform.position.x + 32.0f, selectedBombImage.transform.position.y, selectedBombImage.transform.position.z);
+            selectedBomb++;
+
+            if (selectedBomb > 4)
+            {
+                selectedBomb = 0;
+                selectedBombImage.rectTransform.Translate(-160.0f, 0.0f, 0.0f);
+            }
+            Debug.Log(selectedBomb);
+            
+            selectedBombImage.rectTransform.Translate(32.0f, 0.0f, 0.0f);
+        }
+        //Cycle through inventory
+        else if (Input.GetButtonUp("CycleLeft"))
+        {
+            selectedBomb--;
+
+            if (selectedBomb < 0)
+            {
+                selectedBomb = 4;
+                selectedBombImage.rectTransform.Translate(160.0f, 0.0f, 0.0f);
+            }
+            Debug.Log(selectedBomb);
+
+            selectedBombImage.rectTransform.Translate(-32.0f, 0.0f, 0.0f);
         }
 
-		//Craft a bomb
-		if (Input.GetKey(KeyCode.LeftShift) || Input.GetButtonUp("Confirm"))
+        //Craft a bomb
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetButtonUp("Confirm"))
 			{
 				if (newerBomb.hasIngredient)
 				{
@@ -142,11 +152,15 @@ public class Movemnet : MonoBehaviour {
 						craftedBombs[i] = newerBomb;
 						craftedBombs[i].count++;
 
-						//Erase current bomb
-						newerBomb = default(BombInventory);
-	
+
+                        setInventoryText();
+
+                        //Erase current bomb
+                        makeBombDefaults(ref newerBomb);
+                        Debug.Log(craftedBombs[i].count);
 						break;
-						}
+
+                    }
 					}
 				
 				}
@@ -154,12 +168,10 @@ public class Movemnet : MonoBehaviour {
 			}
 		//------------------------------------------------------------------------------
         //Throw a bomb
-        if ((Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0) && canThrow)
+        if ((Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0 ) && canThrow)
         {
-            //Add crafting modifications here!
 
-
-            craftBomb();
+            throwBomb();
 
             //Now prevent more from being thrown for a moment
             throwRecharge = throwRechargeTime;
@@ -176,30 +188,32 @@ public class Movemnet : MonoBehaviour {
             if (throwRecharge <= 0) canThrow = true;
         }
 
+        //Input needs to be fixed so its on release with the dpad...-----------------------------------------------
         //Toggle crafting material 0
         if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetAxis("D-PadVertical") == 1)
         {
-            toggleCraftingMaterials(0);
+            addMaterial(materialID[0], 0);
         }
 
         //Toggle crafting material 1
         if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetAxis("D-PadVertical") == -1)
         {
-            toggleCraftingMaterials(1);
+            addMaterial(materialID[1], 1);
         }
 
         //Toggle crafting material 2
         if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetAxis("D-PadHorizontal") == 1)
         {
-            toggleCraftingMaterials(2);
+            addMaterial(materialID[2], 2);
         }
         //Toggle crafting material 3
         if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetAxis("D-PadHorizontal") == -1)
         {
-            toggleCraftingMaterials(3);
+            addMaterial(materialID[3], 3);
         }
     }
 
+    //Toggling isn't a thing anymore, so this will be unused.
     void toggleCraftingMaterials(int materialNo)
     {
 
@@ -261,9 +275,53 @@ public class Movemnet : MonoBehaviour {
 
     }
 
-    //Make a bomb
-    void craftBomb()
+    void addMaterial(int newMaterialID, int materialSlot)
     {
+        //Don't do anything if its zero
+        if (materialCount[materialSlot] <= 0) return;
+
+        //Every material's added effect happens here!
+        switch (newMaterialID)
+        {
+
+            default:
+                break;
+            case 1:
+                newerBomb.explosionScaleSpeed += new Vector3(4.0f, 4.0f, 4.0f);
+
+                break;
+            case 2:
+                newerBomb.time -= 0.5f;
+                break;
+            case 3:
+                newerBomb.explosionScaleLimit += 2.0f;
+
+                break;
+            case 4:
+                newerBomb.explosionLifetime += 5.0f;
+          
+                break;
+        }
+
+        //Set the flag for the new bomb to now be craftable
+        newerBomb.hasIngredient = true;
+
+        //Remove material
+        materialCount[materialSlot]--;
+
+
+        setInventoryText();
+
+        //Update text
+        setMaterialCountText(materialSlot);
+
+    }
+
+    //Make a bomb
+    void throwBomb()
+    {
+
+
         //First get a few transformations ready for spawning the bomb
         Transform bombTransform = transform;
         
@@ -287,68 +345,47 @@ public class Movemnet : MonoBehaviour {
         newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
 
 
-        Bomb craftedBomb = newBomb.GetComponent<Bomb>();
+        Bomb newBombClass = newBomb.GetComponent<Bomb>();
 
-        //Basic parameters all bombs have are changed here, but not the type of bomb.
-        if (activeCraftingMaterial[0])
-        {
-            Debug.Log("0");
-            //Explode faster! Last slightly longer!
-            craftedBomb.explosionScaleSpeed = new Vector3(6.0f, 6.0f, 6.0f);
-            craftedBomb.explosionLifetime += 3.0f;
-            craftedBomb.time -= 1.5f;
-       
-            //Use up material
-            materialCount[0] -= 1;
-            //If empty toggle material to no longer be crafted with
-            if (materialCount[0] == 0) toggleCraftingMaterials(0);
 
-            setMaterialCountText(0);
+        if (craftedBombs[selectedBomb].count > 0)
+        { 
+
+        //Transfer all bomb attributes here from the player's inventory data to the new bomb
+        newBombClass.attributes = craftedBombs[selectedBomb];
+
+        craftedBombs[selectedBomb].count--;
+
+            setInventoryText();
         }
-        if (activeCraftingMaterial[1])
+        else
         {
-            Debug.Log("1");
-            //Double the radius, and double the speed!
-            craftedBomb.explosionScaleLimit += 10.0f;
-            craftedBomb.explosionScaleSpeed = new Vector3(8.0f, 8.0f, 8.0f);
-
-            //Use up material
-            materialCount[1] -= 1;
-            //If empty toggle material to no longer be crafted with
-            if (materialCount[1] == 0) toggleCraftingMaterials(1);
-
-            setMaterialCountText(1);
-        }
-        if (activeCraftingMaterial[2])
-        {
-            Debug.Log("2");
-            //Cover more of the ground!
-            craftedBomb.explosionScaleSpeed += new Vector3(8.0f, 0.0f, 8.0f);
-            craftedBomb.explosionScaleLimit += 6.0f;
-
-            //Use up material
-            materialCount[2] -= 1;
-            //If empty toggle material to no longer be crafted with
-            if (materialCount[2] == 0) toggleCraftingMaterials(2);
-
-            setMaterialCountText(2);
-        }
-        if (activeCraftingMaterial[3])
-        {
-
-            Debug.Log("3");
-            //Large lifetime boost
-            craftedBomb.explosionLifetime += 10.0f;
-
-            //Use up material
-            materialCount[3] -= 1;
-            //If empty toggle material to no longer be crafted with
-            if (materialCount[3] == 0) toggleCraftingMaterials(3);
-
-            setMaterialCountText(3);
+            //If an empty inventory slot was selected, throw in a weak regular bomb
+            newBombClass.attributes = default(BombAttributes.BombData);
+            makeBombDefaults(ref newBombClass.attributes);
         }
     }
 
+    void makeBombDefaults(ref BombAttributes.BombData bombToReset)
+    {
+        //Set some stuff to 0 and some specific stuff to 
+        bombToReset = default(BombAttributes.BombData);
+        bombToReset.explosionScaleSpeed = new Vector3(4.0f, 4.0f, 4.0f);
+        bombToReset.explosionScaleLimit = 10.0f;
+        bombToReset.explosionLifetime = 3.0f;
+    }
+
+    void setInventoryText()
+    {
+        for (int i =0; i < 5; i++)
+        {
+            if (craftedBombs[i].count > 0) textForInventory[i].text = craftedBombs[i].count.ToString();
+            else textForInventory[i].text = "";
+
+
+        }
+
+    }
 
 
 }

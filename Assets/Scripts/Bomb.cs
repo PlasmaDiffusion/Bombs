@@ -13,7 +13,8 @@ public class Bomb : MonoBehaviour {
     public Vector3 explosionScaleSpeed;
     public float explosionScaleLimit;
 
-    //dfgdf
+    public BombAttributes.BombData attributes;
+
     // Use this for initialization
     void Start () {
         /*
@@ -38,12 +39,14 @@ public class Bomb : MonoBehaviour {
         {
             //Explode! Create an explosion object and destroy self
             GameObject bombExplosion = Instantiate(newExplosion, transform.position, transform.rotation);
+            
 
             //Modify that explosion based on explosion variables
             ExplosionScale newExplosionClass = bombExplosion.GetComponent<ExplosionScale>();
 
-            newExplosionClass.setExplosionVariables(explosionScaleSpeed, explosionScaleLimit, explosionLifetime);
-            
+            newExplosionClass.explosionAttributes = attributes;
+           
+
             Destroy(gameObject);
         }
     }
