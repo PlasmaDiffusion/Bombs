@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: 1
-  newExplosion: {fileID: 1402890763781832, guid: fe467e78783807f4196b442d01e32b41,
+  newExplosion: {fileID: 1943570900396408, guid: af6b7090d4e6e8947bdcf9f236235f78,
     type: 2}
   explosionLifetime: 3
   explosionScaleSpeed: {x: 4, y: 4, z: 4}

@@ -1,15 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BombCraftingHandler : MonoBehaviour {
 
   //Every special bomb can go here
   public GameObject[] bombs;
+  public Sprite[] matTextures;
 
-	// Use this for initialization
-	void Start () {
-		
+    // Use this for initialization
+    void Start () {
 	}
 	
 	// Update is called once per frame
@@ -26,7 +27,7 @@ public class BombCraftingHandler : MonoBehaviour {
         {
             if (usingMaterial[i]) ingredientString += "+";
             else ingredientString += "-";
-
+            
         }
         if (ingredientString == "-++-") bombToUse = 1;
         

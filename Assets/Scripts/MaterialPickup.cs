@@ -53,7 +53,10 @@ public class MaterialPickup : MonoBehaviour {
 					player.materialCount[i] += 1;
 					player.setMaterialCountText(i);
 
-					break;
+
+                    //And also add the image
+                    setMaterialImageByType(player, i);
+                    break;
 				}
 			}
 
@@ -61,5 +64,17 @@ public class MaterialPickup : MonoBehaviour {
             Destroy(gameObject);
         }
 
+    }
+
+    void setMaterialImageByType(Movemnet p, int index)
+    {
+        BombCraftingHandler imagesReference;
+
+        imagesReference = GameObject.Find("BombCraftingHandler").GetComponent<BombCraftingHandler>();
+
+        p.materialImages[index].sprite = imagesReference.matTextures[materialNo - 1];
+
+
+        
     }
 }

@@ -17,6 +17,11 @@ public class ExplosionScale : MonoBehaviour
         //scaleLengthLimit = 10.0f;
         expanding = true;
         //extraLifetime = 3.0f;
+
+        /*if (explosionAttributes.smoke)
+        {
+
+        }*/
     }
 
     // Update is called once per frame

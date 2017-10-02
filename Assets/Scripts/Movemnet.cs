@@ -27,6 +27,7 @@ public class Movemnet : MonoBehaviour {
     public Text[] textForHUD;
     public Text[] textForInventory;
     public Image selectedBombImage;
+    public Image[] materialImages;
 
     public GameObject bombHandlerReference;
 
@@ -262,7 +263,6 @@ public class Movemnet : MonoBehaviour {
             if (Vector3.Dot(transform.up, collision.contacts[0].normal) > 0.5f)
             {
                 Debug.Log("Grounded");
-                
             }
         }
 
