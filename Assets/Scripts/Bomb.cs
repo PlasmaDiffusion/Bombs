@@ -13,6 +13,9 @@ public class Bomb : MonoBehaviour {
     public Vector3 explosionScaleSpeed;
     public float explosionScaleLimit;
 
+    public bool First = false;
+    public GameObject ThrowingPlayer;
+
     public BombAttributes.BombData attributes;
 
     // Use this for initialization
@@ -45,7 +48,13 @@ public class Bomb : MonoBehaviour {
             ExplosionScale newExplosionClass = bombExplosion.GetComponent<ExplosionScale>();
 
             newExplosionClass.explosionAttributes = attributes;
-           
+
+            if (First)
+            {
+                ThrowingPlayer.transform.position = gameObject.transform.position;
+                Debug.Log("first explosion");
+            }
+                
 
             Destroy(gameObject);
         }

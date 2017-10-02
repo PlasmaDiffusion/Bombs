@@ -11,6 +11,7 @@ public class Movemnet : MonoBehaviour {
     public float m_JumpSpeed;
     public float m_RotationSpeed;
     bool canThrow;
+    private bool firstThrow = true;
     public float throwRechargeTime;
     private float throwRecharge;
 
@@ -170,12 +171,23 @@ public class Movemnet : MonoBehaviour {
         //Throw a bomb
         if ((Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0 ) && canThrow)
         {
+            if (firstThrow)
+            {
+                firstThrow = false;
+                canThrow = false;
+                throwRecharge = 10;
+                throwBomb(true);
+            }
+            else
+            {
+                throwBomb();
 
-            throwBomb();
+                //Now prevent more from being thrown for a moment
+                throwRecharge = throwRechargeTime;
+                canThrow = false;
+            }
 
-            //Now prevent more from being thrown for a moment
-            throwRecharge = throwRechargeTime;
-            canThrow = false;
+            
 
         }
 
@@ -318,7 +330,7 @@ public class Movemnet : MonoBehaviour {
     }
 
     //Make a bomb
-    void throwBomb()
+    void throwBomb(bool first = false)
     {
 
 
@@ -346,7 +358,7 @@ public class Movemnet : MonoBehaviour {
 
 
         Bomb newBombClass = newBomb.GetComponent<Bomb>();
-
+        newBombClass.ThrowingPlayer = gameObject;
 
         if (craftedBombs[selectedBomb].count > 0)
         { 
@@ -363,6 +375,12 @@ public class Movemnet : MonoBehaviour {
             //If an empty inventory slot was selected, throw in a weak regular bomb
             newBombClass.attributes = default(BombAttributes.BombData);
             makeBombDefaults(ref newBombClass.attributes);
+        }
+
+        if (first)
+        {
+            newBombClass.First = true;
+            
         }
     }
 
