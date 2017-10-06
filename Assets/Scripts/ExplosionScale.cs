@@ -55,12 +55,34 @@ public class ExplosionScale : MonoBehaviour
         //Knockback whatever is in the explosion
 
         Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
+        Movemnet player = other.gameObject.GetComponent<Movemnet>();
 
 
         if (otherRigidBody)
         {
             otherRigidBody.velocity = transform.forward * 10.0f;
+
+            if (player)
+            {
+
+                //Deal some damage
+                player.damage(explosionAttributes.damage);
+
+            //Do extra affects here
+
+            if (explosionAttributes.fire > 0)
+                {
+                player.addStatusEffect(1, 20.0f * explosionAttributes.fire);
+                }
+            else if (explosionAttributes.freeze > 0)
+                {
+                player.addStatusEffect(2, 30.0f * explosionAttributes.freeze);
+                }
+            }
         }
+
+
+
         
     }
 }

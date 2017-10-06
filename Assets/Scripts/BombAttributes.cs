@@ -17,10 +17,12 @@ public class BombAttributes : MonoBehaviour {
         public float explosionScaleLimit;
         public float explosionLifetime;
 
+        public float damage;
+
         //Special on/off parameters
-        public bool fire;
-        public bool freeze;
-        public bool smoke;
+        public int fire;
+        public int freeze;
+        public int smoke;
     }
 
 

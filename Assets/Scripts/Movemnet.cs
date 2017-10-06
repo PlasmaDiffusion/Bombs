@@ -15,6 +15,13 @@ public class Movemnet : MonoBehaviour {
     public float throwRechargeTime;
     private float throwRecharge;
 
+    private float health;
+
+    //Status effects
+    private float stunned;
+    private float burning;
+
+
     //Array for inventory.
     BombAttributes.BombData[] craftedBombs = new BombAttributes.BombData[5];
 
@@ -27,8 +34,10 @@ public class Movemnet : MonoBehaviour {
     public bool[] activeCraftingMaterial;
     public Text[] textForHUD;
     public Text[] textForInventory;
+    public Text healthText;
     public Image selectedBombImage;
     public Image[] materialImages;
+    
 
     public GameObject bombHandlerReference;
 
@@ -63,10 +72,18 @@ public class Movemnet : MonoBehaviour {
         }
         makeBombDefaults(ref newerBomb);
         setInventoryText();
+
+        health = 100.0f;
+        //Status effect stuff
+        stunned = 0.0f;
+        burning = 0.0f;
+
     }
 	
 	// Update is called once per frame
 	void Update () {
+
+        manageStatusEffects();
 
         /*if(Input.GetKey(KeyCode.W))
         {
@@ -84,7 +101,12 @@ public class Movemnet : MonoBehaviour {
             m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
         }*/
 
-        
+        //Don't have any input if stunned
+        if (stunned > 0.0f)
+        {
+            return;
+        }
+
 		//Movement input
         float velocityForward = Input.GetAxis("Vertical") * m_Speed * Time.deltaTime;
         float velocityRight = Input.GetAxis("Horizontal") * m_Speed * Time.deltaTime;
@@ -299,19 +321,20 @@ public class Movemnet : MonoBehaviour {
             default:
                 break;
             case 1:
-                newerBomb.explosionScaleSpeed += new Vector3(4.0f, 4.0f, 4.0f);
+                newerBomb.freeze += 1;
 
                 break;
             case 2:
-                newerBomb.time -= 0.5f;
+                newerBomb.fire += 1;
+                
                 break;
             case 3:
                 newerBomb.explosionScaleLimit += 2.0f;
 
                 break;
             case 4:
-                newerBomb.explosionLifetime += 5.0f;
-          
+                newerBomb.explosionScaleLimit += 2.0f;
+
                 break;
         }
 
@@ -391,6 +414,9 @@ public class Movemnet : MonoBehaviour {
         bombToReset.explosionScaleSpeed = new Vector3(4.0f, 4.0f, 4.0f);
         bombToReset.explosionScaleLimit = 10.0f;
         bombToReset.explosionLifetime = 3.0f;
+        bombToReset.fire = 0;
+        bombToReset.freeze = 0;
+        bombToReset.damage = 25.0f;
     }
 
     void setInventoryText()
@@ -405,5 +431,43 @@ public class Movemnet : MonoBehaviour {
 
     }
 
+    public void damage(float damageAmount)
+    {
+        health -= damageAmount;
+        healthText.text = health.ToString();
+    }
 
+    void manageStatusEffects()
+    {
+        if (burning > 0.0f)
+        {
+
+            damage(1.0f * Time.deltaTime);
+            burning -= 1.0f * Time.deltaTime;
+        }
+
+        if (stunned > 0.0f)
+        {
+            stunned -= 1.0f * Time.deltaTime;
+        }
+    }
+
+    //Add a status effect based on a number. Duration is based on ticks * delta time
+    public void addStatusEffect(int statusID, float duration)
+    {
+        switch (statusID)
+        {
+            case 1:
+
+                burning = duration;
+                break;
+
+            case 2:
+
+                stunned = duration;
+                break;
+
+
+        }
+    }
 }
