@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Movemnet : MonoBehaviour {
+public class Player : MonoBehaviour {
 
     Rigidbody m_Rigidbody;
     public float m_Speed;   //Public stuffs go in the inspector
@@ -14,6 +14,10 @@ public class Movemnet : MonoBehaviour {
     private bool firstThrow = true;
     public float throwRechargeTime;
     private float throwRecharge;
+    private float throwingPower;
+
+
+    private bool[] dpadReleased = new bool[4]; //In case of accidental crafting from holding the button more than a frame
 
     private float health;
 
@@ -63,6 +67,7 @@ public class Movemnet : MonoBehaviour {
             textForHUD[0].text = materialCount[i].ToString();
             activeCraftingMaterial[i] = false;
 
+            dpadReleased[i] = false;
         }
 
         //Make sure bomb inventory structure stuff are at default values.
@@ -73,6 +78,7 @@ public class Movemnet : MonoBehaviour {
         makeBombDefaults(ref newerBomb);
         setInventoryText();
 
+        throwingPower = -0.5f;
         health = 100.0f;
         //Status effect stuff
         stunned = 0.0f;
@@ -100,12 +106,11 @@ public class Movemnet : MonoBehaviour {
             m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
             m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
         }*/
+        
 
         //Don't have any input if stunned
-        if (stunned > 0.0f)
-        {
-            return;
-        }
+        if (stunned > 0.0f) return;
+
 
 		//Movement input
         float velocityForward = Input.GetAxis("Vertical") * m_Speed * Time.deltaTime;
@@ -184,21 +189,28 @@ public class Movemnet : MonoBehaviour {
                         Debug.Log(craftedBombs[i].count);
 						break;
 
-                    }
+                        }
 					}
 				
 				}
 
 			}
-		//------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------
+
+        //Prepare to throw bomb
+        if (Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0.5)
+        {
+            if (throwingPower < 2.0f) throwingPower += (2.0f * Time.deltaTime);
+        }
+
         //Throw a bomb
-        if ((Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0 ) && canThrow)
+        if ((Input.GetKeyUp(KeyCode.Space) || Input.GetAxis("Throw") < 0.5) && canThrow && throwingPower > 0.0f)
         {
             if (firstThrow)
             {
                 firstThrow = false;
                 canThrow = false;
-                throwRecharge = 10;
+                throwRecharge = throwRechargeTime;
                 throwBomb(true);
             }
             else
@@ -223,29 +235,40 @@ public class Movemnet : MonoBehaviour {
             if (throwRecharge <= 0) canThrow = true;
         }
 
-        //Input needs to be fixed so its on release with the dpad...-----------------------------------------------
+        //Dpad/arrow keys crafting input -------------------------------------------------
+
         //Toggle crafting material 0
-        if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetAxis("D-PadVertical") == 1)
+        if (Input.GetKeyUp(KeyCode.UpArrow) || (dpadReleased[0] && Input.GetAxis("D-PadVertical") == 1))
         {
             addMaterial(materialID[0], 0);
+            dpadReleased[0] = false;
         }
 
         //Toggle crafting material 1
-        if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetAxis("D-PadVertical") == -1)
+        if (Input.GetKeyUp(KeyCode.DownArrow) || (dpadReleased[1] && Input.GetAxis("D-PadVertical") == -1))
         {
             addMaterial(materialID[1], 1);
+            dpadReleased[1] = false;
         }
 
         //Toggle crafting material 2
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetAxis("D-PadHorizontal") == 1)
+        if (Input.GetKeyUp(KeyCode.RightArrow) || (dpadReleased[2] && Input.GetAxis("D-PadHorizontal") == 1))
         {
             addMaterial(materialID[2], 2);
+            dpadReleased[2] = false;
         }
         //Toggle crafting material 3
-        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetAxis("D-PadHorizontal") == -1)
+        if (Input.GetKeyUp(KeyCode.LeftArrow) || (dpadReleased[3] && Input.GetAxis("D-PadHorizontal") == -1))
         {
             addMaterial(materialID[3], 3);
+            dpadReleased[3] = false;
         }
+
+        //Dpad input doesn't detect if a button was released. These if statements will emulate that. This prevents all materials of the same type from being added immediately.
+        if (Input.GetAxis("D-PadVertical") != 1) dpadReleased[0] = true;
+        if (Input.GetAxis("D-PadVertical") != -1) dpadReleased[1] = true;
+        if (Input.GetAxis("D-PadHorizontal") != 1) dpadReleased[2] = true;
+        if (Input.GetAxis("D-PadHorizontal") != -1) dpadReleased[3] = true;
     }
 
     //Toggling isn't a thing anymore, so this will be unused.
@@ -329,7 +352,7 @@ public class Movemnet : MonoBehaviour {
                 
                 break;
             case 3:
-                newerBomb.explosionScaleLimit += 2.0f;
+                newerBomb.smoke += 1;
 
                 break;
             case 4:
@@ -349,6 +372,7 @@ public class Movemnet : MonoBehaviour {
 
         //Update text
         setMaterialCountText(materialSlot);
+        
 
     }
 
@@ -376,6 +400,9 @@ public class Movemnet : MonoBehaviour {
 
         Vector3 newVelocity = forwardOffset.normalized;
         newVelocity.y += 5.0f; //Make it arc upwards a little
+
+        //Influence throw based on how long the button was held
+        newVelocity.y += throwingPower;
 
         newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
 
@@ -405,6 +432,8 @@ public class Movemnet : MonoBehaviour {
             newBombClass.First = true;
             
         }
+
+        throwingPower = -0.5f;
     }
 
     void makeBombDefaults(ref BombAttributes.BombData bombToReset)

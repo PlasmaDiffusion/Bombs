@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MaterialPickup
   - BombList
+  - SmokeParticles
   layers:
   - Default
   - TransparentFX

@@ -9,6 +9,10 @@ public class ExplosionScale : MonoBehaviour
  
     public BombAttributes.BombData explosionAttributes;
 
+    public GameObject[] emitterObjectReferences;
+
+    GameObject[] particleEmitters;
+
     // Use this for initialization
     void Start()
     {
@@ -17,11 +21,16 @@ public class ExplosionScale : MonoBehaviour
         //scaleLengthLimit = 10.0f;
         expanding = true;
         //extraLifetime = 3.0f;
+        
 
-        /*if (explosionAttributes.smoke)
+        particleEmitters = new GameObject[explosionAttributes.smoke];
+
+        //Smoke particles
+            for (int i = 0; i < explosionAttributes.smoke; i++)
         {
+            particleEmitters[i] = Instantiate(emitterObjectReferences[0], transform.position, new Quaternion(0.0f, 0.0f, 0.0f, 0.0f));
+        }
 
-        }*/
     }
 
     // Update is called once per frame
@@ -42,12 +51,16 @@ public class ExplosionScale : MonoBehaviour
         }
         else
         {
-            //Already scaled up; now wait a brief moment and destroy the explosion
-
+            //Already scaled up; now wait a brief moment and destroy the explosion (and any extra particle emitters)
             explosionAttributes.explosionLifetime -= 1.0f * Time.deltaTime;
-            if (explosionAttributes.explosionLifetime < 0.0f) Destroy(gameObject);
+            if (explosionAttributes.explosionLifetime < 0.0f)
+                {
+                for (int i = explosionAttributes.smoke - 1; i >= 0; i--) Destroy(particleEmitters[i]);
 
-        }
+                Destroy(gameObject);
+                }
+
+            }
     }
     
     void OnTriggerEnter(Collider other)
@@ -55,7 +68,7 @@ public class ExplosionScale : MonoBehaviour
         //Knockback whatever is in the explosion
 
         Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
-        Movemnet player = other.gameObject.GetComponent<Movemnet>();
+        Player player = other.gameObject.GetComponent<Player>();
 
 
         if (otherRigidBody)
@@ -72,11 +85,11 @@ public class ExplosionScale : MonoBehaviour
 
             if (explosionAttributes.fire > 0)
                 {
-                player.addStatusEffect(1, 20.0f * explosionAttributes.fire);
+                player.addStatusEffect(1, 10.0f * explosionAttributes.fire);
                 }
-            else if (explosionAttributes.freeze > 0)
+            if (explosionAttributes.freeze > 0)
                 {
-                player.addStatusEffect(2, 30.0f * explosionAttributes.freeze);
+                player.addStatusEffect(2, 5.0f * explosionAttributes.freeze);
                 }
             }
         }
@@ -85,4 +98,7 @@ public class ExplosionScale : MonoBehaviour
 
         
     }
+
+
+    
 }

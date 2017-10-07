@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MaterialPickup : MonoBehaviour {
 
-    private Movemnet player;
+    private Player player;
     public int materialNo;
     
 	// Use this for initialization
@@ -19,12 +19,14 @@ public class MaterialPickup : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
+
        //Give player item to craft with
 
         if (other.gameObject.CompareTag("Player"))
         {
+            bool found = false;
 
-            player = other.gameObject.GetComponent<Movemnet>();
+            player = other.gameObject.GetComponent<Player>();
 
 			//First see if the player has the material id in the inventory
 			for (int i = 0; i < 4; i++)
@@ -35,6 +37,7 @@ public class MaterialPickup : MonoBehaviour {
 				{
 					player.materialCount[i] += 1;
 					player.setMaterialCountText(i);
+                    found = true;
 
 					break;
 				}
@@ -42,31 +45,31 @@ public class MaterialPickup : MonoBehaviour {
 
 
 			}
+            //If not then find an empty slot to add it to
+            if (!found)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (player.materialID[i] == 0)
+                    {
+                        player.materialID[i] = materialNo;
+                        player.materialCount[i] += 1;
+                        player.setMaterialCountText(i);
 
 
-			//If not then find an empty slot to add it to
-			for (int i = 0; i < 4; i++) 
-			{
-				if (player.materialID[i] == 0)
-				{
-					player.materialID [i] = materialNo;
-					player.materialCount[i] += 1;
-					player.setMaterialCountText(i);
-
-
-                    //And also add the image
-                    setMaterialImageByType(player, i);
-                    break;
-				}
-			}
-
+                        //And also add the image
+                        setMaterialImageByType(player, i);
+                        break;
+                    }
+                }
+            }
 
             Destroy(gameObject);
         }
 
     }
 
-    void setMaterialImageByType(Movemnet p, int index)
+    void setMaterialImageByType(Player p, int index)
     {
         BombCraftingHandler imagesReference;
 
