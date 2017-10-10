@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
 
     private bool[] dpadReleased = new bool[4]; //In case of accidental crafting from holding the button more than a frame
 
+
     private float health;
 
     //Status effects
@@ -44,11 +45,16 @@ public class Player : MonoBehaviour {
     
 
     public GameObject bombHandlerReference;
+ 
 
     private GameObject bomb;
     private BombCraftingHandler bombHandler;
     
 	int selectedBomb;
+
+
+    public GameObject fireEmitterReference;
+    private GameObject childFireEmitter;
 
     // Use this for initialization
     void Start () {
@@ -78,7 +84,7 @@ public class Player : MonoBehaviour {
         makeBombDefaults(ref newerBomb);
         setInventoryText();
 
-        throwingPower = -0.5f;
+        throwingPower = -0.1f;
         health = 100.0f;
         //Status effect stuff
         stunned = 0.0f;
@@ -118,9 +124,10 @@ public class Player : MonoBehaviour {
 
         m_Rigidbody.velocity += (transform.forward * velocityForward);
 		m_Rigidbody.velocity += (transform.right * velocityRight);
+        m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
 
-		//Rotation/camera input
-		float rotate = Input.GetAxis("RightStickH");
+        //Rotation/camera input
+        float rotate = Input.GetAxis("RightStickH");
 
 		if (rotate > 0.6f || rotate < -0.6f) m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
 
@@ -202,9 +209,9 @@ public class Player : MonoBehaviour {
         {
             if (throwingPower < 2.0f) throwingPower += (2.0f * Time.deltaTime);
         }
-
+        Debug.Log(Input.GetAxis("Throw").ToString());
         //Throw a bomb
-        if ((Input.GetKeyUp(KeyCode.Space) || Input.GetAxis("Throw") < 0.5) && canThrow && throwingPower > 0.0f)
+        if ((Input.GetKeyUp(KeyCode.Space) || (Input.GetAxis("Throw") < 0.2 && Input.GetAxis("Throw") > 0.0)) && canThrow && throwingPower > 0.0f)
         {
             if (firstThrow)
             {
@@ -433,7 +440,7 @@ public class Player : MonoBehaviour {
             
         }
 
-        throwingPower = -0.5f;
+        throwingPower = -0.1f;
     }
 
     void makeBombDefaults(ref BombAttributes.BombData bombToReset)
@@ -470,14 +477,27 @@ public class Player : MonoBehaviour {
     {
         if (burning > 0.0f)
         {
-
+            
             damage(1.0f * Time.deltaTime);
             burning -= 1.0f * Time.deltaTime;
+            childFireEmitter.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+            //Get rid of fire particles
+            if (burning <= 0.0f)
+            {
+                Destroy(childFireEmitter);
+            }
         }
 
         if (stunned > 0.0f)
         {
             stunned -= 1.0f * Time.deltaTime;
+
+            //Recolour if run out
+            if (stunned <= 0.0f)
+            {
+                Renderer rend = GetComponent<Renderer>();
+                rend.material.SetColor("_Color", new Color(0.309f, 0.0f, 0.0f));
+            }
         }
     }
 
@@ -489,11 +509,19 @@ public class Player : MonoBehaviour {
             case 1:
 
                 burning = duration;
+
+
+                childFireEmitter = Instantiate(fireEmitterReference, transform);
+   
+
                 break;
 
             case 2:
 
                 stunned = duration;
+                Renderer rend = GetComponent<Renderer>();
+                rend.material.SetColor("_Color", Color.cyan);
+
                 break;
 
 
