@@ -52,7 +52,7 @@ public class Bomb : MonoBehaviour {
             if (First)
             {
                 ThrowingPlayer.transform.position = gameObject.transform.position;
-                Debug.Log("first explosion");
+                Debug.Log("first explosion ");
             }
                 
 
