@@ -28,7 +28,7 @@ public class NodeGenerator : MonoBehaviour
                     break;
                 case 1:
                     Pos = new Vector3(0,
-                        0, gameObject.GetComponent<Renderer>().bounds.size.z);
+                        -gameObject.GetComponent<Renderer>().bounds.size.y / 2, gameObject.GetComponent<Renderer>().bounds.size.z);
                     break;
                 case 2:
                     Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x,
