@@ -10,7 +10,7 @@ public class NodeGenerator : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
-		spawnNode(5);
+		spawnNode(2);
 	}
 
     void spawnNode(int num)
@@ -24,19 +24,19 @@ public class NodeGenerator : MonoBehaviour
             {
                 case 0:
                     Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x,
-                        0, gameObject.GetComponent<Renderer>().bounds.size.z);
+                        -gameObject.GetComponent<Renderer>().bounds.size.y / 2, 0);
                     break;
                 case 1:
-                    Pos = new Vector3(-gameObject.GetComponent<Renderer>().bounds.size.x,
-                        0, gameObject.GetComponent<Renderer>().bounds.size.z);
+                    Pos = new Vector3(0,
+                        -gameObject.GetComponent<Renderer>().bounds.size.y / 2, gameObject.GetComponent<Renderer>().bounds.size.z);
                     break;
                 case 2:
                     Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x,
-                        0, -gameObject.GetComponent<Renderer>().bounds.size.z);
+                        -gameObject.GetComponent<Renderer>().bounds.size.y, 0);
                     break;
                 case 3:
-                    Pos = new Vector3(-gameObject.GetComponent<Renderer>().bounds.size.x,
-                        0, -gameObject.GetComponent<Renderer>().bounds.size.z);
+                    Pos = new Vector3(0,
+                        -gameObject.GetComponent<Renderer>().bounds.size.y, 0);
                     break;
                 default:
                     Pos = gameObject.GetComponent<Renderer>().bounds.size;
