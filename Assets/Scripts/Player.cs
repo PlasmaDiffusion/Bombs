@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
 
+    public string playerInputString = ""; //String to be added onto local input
+    private bool player1;
+
     Rigidbody m_Rigidbody;
     public float m_Speed;   //Public stuffs go in the inspector
     public float m_MaxSpeed;
@@ -21,6 +24,8 @@ public class Player : MonoBehaviour {
 
 
     private float health;
+
+    private GameObject throwBar;
 
     //Status effects
     private float stunned;
@@ -59,11 +64,18 @@ public class Player : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
+        //Determine if player 1 for key input purposes. Reverse the values to give keyboard input to player 2.
+        if (playerInputString == "") player1 = true;
+        else player1 = false;
+
+        //Initialize some stuff
         m_Rigidbody = gameObject.GetComponent<Rigidbody>(); //Get rigid body for movemnt stuff below
         canThrow = true;
        bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
        bombHandler  = bombHandlerReference.GetComponent<BombCraftingHandler>();
 		selectedBomb = 0;
+
+        throwBar = transform.GetChild(1).gameObject;
 
         //Inventory stuff
         for (int i = 0; i < 4; i++)
@@ -119,26 +131,26 @@ public class Player : MonoBehaviour {
 
 
 		//Movement input
-        float velocityForward = Input.GetAxis("Vertical") * m_Speed * Time.deltaTime;
-        float velocityRight = Input.GetAxis("Horizontal") * m_Speed * Time.deltaTime;
+        float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed * Time.deltaTime;
+        float velocityRight = Input.GetAxis("Horizontal" + playerInputString) * m_Speed * Time.deltaTime;
 
         m_Rigidbody.velocity += (transform.forward * velocityForward);
 		m_Rigidbody.velocity += (transform.right * velocityRight);
         m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
 
         //Rotation/camera input
-        float rotate = Input.GetAxis("RightStickH");
+        float rotate = Input.GetAxis("RightStickH" + playerInputString);
 
 		if (rotate > 0.6f || rotate < -0.6f) m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
 
 
-		if (Input.GetKey(KeyCode.L))
+		if (Input.GetKey(KeyCode.L) && player1)
 		{
 			m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
 		}
 
 
-		if (Input.GetKey(KeyCode.J))
+		if (Input.GetKey(KeyCode.J) && player1)
 		{
 			m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
 		}
@@ -146,7 +158,7 @@ public class Player : MonoBehaviour {
 		//------------------------------------------------------------------------------
 
         //Cycle through inventory
-        if (Input.GetButtonUp("CycleRight"))
+        if ((Input.GetKeyUp(KeyCode.E) && player1) || (Input.GetButtonUp("CycleRight" + playerInputString)))
         {
             selectedBomb++;
 
@@ -155,12 +167,12 @@ public class Player : MonoBehaviour {
                 selectedBomb = 0;
                 selectedBombImage.rectTransform.Translate(-160.0f, 0.0f, 0.0f);
             }
-            Debug.Log(selectedBomb);
+            Debug.Log(selectedBomb.ToString() + " " + playerInputString);
             
             selectedBombImage.rectTransform.Translate(32.0f, 0.0f, 0.0f);
         }
         //Cycle through inventory
-        else if (Input.GetButtonUp("CycleLeft"))
+        else if ((Input.GetKeyUp(KeyCode.Q) && player1) || (Input.GetButtonUp("CycleLeft" + playerInputString)))
         {
             selectedBomb--;
 
@@ -175,8 +187,10 @@ public class Player : MonoBehaviour {
         }
 
         //Craft a bomb
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetButtonUp("Confirm"))
+        if ((Input.GetKey(KeyCode.LeftShift) && player1) || Input.GetButtonUp("Confirm" + playerInputString))
 			{
+            Debug.Log(" " + playerInputString);
+
 				if (newerBomb.hasIngredient)
 				{
 
@@ -205,20 +219,30 @@ public class Player : MonoBehaviour {
         //------------------------------------------------------------------------------
 
         //Prepare to throw bomb
-        if (Input.GetKey(KeyCode.Space) || Input.GetAxis("Throw") > 0.5)
+        if ((Input.GetKey(KeyCode.Space) && player1) || Input.GetAxis("Throw" + playerInputString) > 0.5)
         {
+
             if (throwingPower < 2.0f) throwingPower += (2.0f * Time.deltaTime);
+            
+            throwBar.transform.localScale = new Vector3(throwingPower, 0.1f, 0.1f);
+            
+
         }
-        Debug.Log(Input.GetAxis("Throw").ToString());
+        //Debug.Log(Input.GetAxis("Throw" + playerInputString).ToString());
         //Throw a bomb
-        if ((Input.GetKeyUp(KeyCode.Space) || (Input.GetAxis("Throw") < 0.2 && Input.GetAxis("Throw") > 0.0)) && canThrow && throwingPower > 0.0f)
+        if (((Input.GetKeyUp(KeyCode.Space) && player1) || (Input.GetAxis("Throw" + playerInputString) < 0.5 && Input.GetAxis("Throw" + playerInputString) > 0.0)) && canThrow && throwingPower > 0.0f)
         {
+
+            throwBar.transform.localScale = new Vector3(0.0f, 0.1f, 0.1f);
+
             if (firstThrow)
             {
                 firstThrow = false;
                 canThrow = false;
                 throwRecharge = throwRechargeTime;
                 throwBomb(true);
+
+                throwBar.GetComponent<Renderer>().material.SetColor("_Color", new Color(0.2f, 0.2f, 0.2f));
             }
             else
             {
@@ -227,6 +251,8 @@ public class Player : MonoBehaviour {
                 //Now prevent more from being thrown for a moment
                 throwRecharge = throwRechargeTime;
                 canThrow = false;
+
+                throwBar.GetComponent<Renderer>().material.SetColor("_Color", new Color(0.2f, 0.2f, 0.2f));
             }
 
             
@@ -239,43 +265,47 @@ public class Player : MonoBehaviour {
             throwRecharge -= 1 * Time.deltaTime;
             //Debug.Log(throwRecharge);
 
-            if (throwRecharge <= 0) canThrow = true;
+            if (throwRecharge <= 0)
+            {
+                canThrow = true;
+                throwBar.GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f, 1.0f, 1.0f));
+            }
         }
 
         //Dpad/arrow keys crafting input -------------------------------------------------
 
         //Toggle crafting material 0
-        if (Input.GetKeyUp(KeyCode.UpArrow) || (dpadReleased[0] && Input.GetAxis("D-PadVertical") == 1))
+        if ((Input.GetKeyUp(KeyCode.UpArrow) && player1) || (dpadReleased[0] && Input.GetAxis("D-PadVertical" + playerInputString) == 1))
         {
             addMaterial(materialID[0], 0);
             dpadReleased[0] = false;
         }
 
         //Toggle crafting material 1
-        if (Input.GetKeyUp(KeyCode.DownArrow) || (dpadReleased[1] && Input.GetAxis("D-PadVertical") == -1))
+        if ((Input.GetKeyUp(KeyCode.DownArrow) && player1) || (dpadReleased[1] && Input.GetAxis("D-PadVertical" + playerInputString) == -1))
         {
             addMaterial(materialID[1], 1);
             dpadReleased[1] = false;
         }
 
         //Toggle crafting material 2
-        if (Input.GetKeyUp(KeyCode.RightArrow) || (dpadReleased[2] && Input.GetAxis("D-PadHorizontal") == 1))
+        if ((Input.GetKeyUp(KeyCode.RightArrow) && player1) || (dpadReleased[2] && Input.GetAxis("D-PadHorizontal" + playerInputString) == 1))
         {
             addMaterial(materialID[2], 2);
             dpadReleased[2] = false;
         }
         //Toggle crafting material 3
-        if (Input.GetKeyUp(KeyCode.LeftArrow) || (dpadReleased[3] && Input.GetAxis("D-PadHorizontal") == -1))
+        if ((Input.GetKeyUp(KeyCode.LeftArrow) && player1) || (dpadReleased[3] && Input.GetAxis("D-PadHorizontal" + playerInputString) == -1))
         {
             addMaterial(materialID[3], 3);
             dpadReleased[3] = false;
         }
 
         //Dpad input doesn't detect if a button was released. These if statements will emulate that. This prevents all materials of the same type from being added immediately.
-        if (Input.GetAxis("D-PadVertical") != 1) dpadReleased[0] = true;
-        if (Input.GetAxis("D-PadVertical") != -1) dpadReleased[1] = true;
-        if (Input.GetAxis("D-PadHorizontal") != 1) dpadReleased[2] = true;
-        if (Input.GetAxis("D-PadHorizontal") != -1) dpadReleased[3] = true;
+        if (Input.GetAxis("D-PadVertical" + playerInputString) != 1) dpadReleased[0] = true;
+        if (Input.GetAxis("D-PadVertical" + playerInputString) != -1) dpadReleased[1] = true;
+        if (Input.GetAxis("D-PadHorizontal" + playerInputString) != 1) dpadReleased[2] = true;
+        if (Input.GetAxis("D-PadHorizontal" + playerInputString) != -1) dpadReleased[3] = true;
     }
 
     //Toggling isn't a thing anymore, so this will be unused.
@@ -497,6 +527,11 @@ public class Player : MonoBehaviour {
             {
                 Renderer rend = GetComponent<Renderer>();
                 rend.material.SetColor("_Color", new Color(0.309f, 0.0f, 0.0f));
+                if (!player1)
+                {
+                    rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 0.317f));
+                }
+
             }
         }
     }
