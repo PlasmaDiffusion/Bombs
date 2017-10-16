@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23807852913283310}
   - component: {fileID: 114713416826680432}
   m_Layer: 0
-  m_Name: SmokeyExplosion
+  m_Name: RedExplosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,6 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expanding: 0
+  emitterObjectReferences: []
 --- !u!135 &135866429807959794
 SphereCollider:
   m_ObjectHideFlags: 1

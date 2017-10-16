@@ -31,6 +31,12 @@ public class ExplosionScale : MonoBehaviour
             particleEmitters[i] = Instantiate(emitterObjectReferences[0], transform.position, new Quaternion(0.0f, 0.0f, 0.0f, 0.0f));
         }
 
+            //Recolour explosion if bigger radius
+        if (explosionAttributes.explosionScaleLimit > 10.0f)
+        {
+            Renderer rend = GetComponent<Renderer>();
+            rend.material.SetColor("_Color", new Color(0.6f, 0.0f, 0.0f, 0.5f));
+        }
     }
 
     // Update is called once per frame

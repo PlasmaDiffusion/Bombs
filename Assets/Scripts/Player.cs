@@ -40,29 +40,29 @@ public class Player : MonoBehaviour {
 
     //Material variables for crafting
     public int[] materialCount;
-	public int[] materialID;
+    public int[] materialID;
     public bool[] activeCraftingMaterial;
     public Text[] textForHUD;
     public Text[] textForInventory;
     public Text healthText;
     public Image selectedBombImage;
     public Image[] materialImages;
-    
+
 
     public GameObject bombHandlerReference;
- 
+
 
     private GameObject bomb;
     private BombCraftingHandler bombHandler;
-    
-	int selectedBomb;
+
+    int selectedBomb;
 
 
     public GameObject fireEmitterReference;
     private GameObject childFireEmitter;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //Determine if player 1 for key input purposes. Reverse the values to give keyboard input to player 2.
         if (playerInputString == "") player1 = true;
@@ -71,9 +71,9 @@ public class Player : MonoBehaviour {
         //Initialize some stuff
         m_Rigidbody = gameObject.GetComponent<Rigidbody>(); //Get rigid body for movemnt stuff below
         canThrow = true;
-       bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
-       bombHandler  = bombHandlerReference.GetComponent<BombCraftingHandler>();
-		selectedBomb = 0;
+        bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
+        bombHandler = bombHandlerReference.GetComponent<BombCraftingHandler>();
+        selectedBomb = 0;
 
         throwBar = transform.GetChild(1).gameObject;
 
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour {
         for (int i = 0; i < 4; i++)
         {
             materialCount[i] = 0;
-			materialID[i] = 0;
+            materialID[i] = 0;
             textForHUD[0].text = materialCount[i].ToString();
             activeCraftingMaterial[i] = false;
 
@@ -103,9 +103,9 @@ public class Player : MonoBehaviour {
         burning = 0.0f;
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
 
         manageStatusEffects();
 
@@ -124,19 +124,27 @@ public class Player : MonoBehaviour {
             m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
             m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
         }*/
-        
+
 
         //Don't have any input if stunned
         if (stunned > 0.0f) return;
 
 
-		//Movement input
+        //Movement input
         float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed * Time.deltaTime;
         float velocityRight = Input.GetAxis("Horizontal" + playerInputString) * m_Speed * Time.deltaTime;
 
-        m_Rigidbody.velocity += (transform.forward * velocityForward);
-		m_Rigidbody.velocity += (transform.right * velocityRight);
+        //m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
+
+        m_Rigidbody.velocity += (transform.forward * velocityForward * 1.5f);
+        m_Rigidbody.velocity += (transform.right * velocityRight * 1.5f);
         m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+
+        //Jump
+        if ((Input.GetKeyUp(KeyCode.LeftControl) && player1) || Input.GetButtonUp("Confirm" + playerInputString))
+        {
+            if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
+        }
 
         //Rotation/camera input
         float rotate = Input.GetAxis("RightStickH" + playerInputString);
@@ -187,7 +195,7 @@ public class Player : MonoBehaviour {
         }
 
         //Craft a bomb
-        if ((Input.GetKey(KeyCode.LeftShift) && player1) || Input.GetButtonUp("Confirm" + playerInputString))
+        if ((Input.GetKey(KeyCode.LeftShift) && player1) || Input.GetButtonUp("Craft" + playerInputString))
 			{
             Debug.Log(" " + playerInputString);
 
@@ -235,6 +243,7 @@ public class Player : MonoBehaviour {
 
             throwBar.transform.localScale = new Vector3(0.0f, 0.1f, 0.1f);
 
+            //Special warp bomb for first throw
             if (firstThrow)
             {
                 firstThrow = false;
@@ -467,7 +476,7 @@ public class Player : MonoBehaviour {
         if (first)
         {
             newBombClass.First = true;
-            
+            newBombClass.time = 2.0f;
         }
 
         throwingPower = -0.1f;
@@ -525,7 +534,11 @@ public class Player : MonoBehaviour {
             //Recolour if run out
             if (stunned <= 0.0f)
             {
-                Renderer rend = GetComponent<Renderer>();
+
+                
+
+                //Renderer rend = GetComponent<Renderer>();
+                Renderer rend = transform.GetChild(2).GetComponent<Renderer>();
                 rend.material.SetColor("_Color", new Color(0.309f, 0.0f, 0.0f));
                 if (!player1)
                 {
@@ -554,7 +567,8 @@ public class Player : MonoBehaviour {
             case 2:
 
                 stunned = duration;
-                Renderer rend = GetComponent<Renderer>();
+                //Renderer rend = GetComponent<Renderer>();
+                Renderer rend = transform.GetChild(2).GetComponent<Renderer>();
                 rend.material.SetColor("_Color", Color.cyan);
 
                 break;
