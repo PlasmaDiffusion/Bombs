@@ -13,6 +13,8 @@ public class ExplosionScale : MonoBehaviour
 
     GameObject[] particleEmitters;
 
+    public bool firstBomb = false;
+
     // Use this for initialization
     void Start()
     {
@@ -71,6 +73,9 @@ public class ExplosionScale : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
+        //Do nothing as a first bomb
+        if (firstBomb) return;
+
         //Knockback whatever is in the explosion
 
         Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
@@ -79,8 +84,15 @@ public class ExplosionScale : MonoBehaviour
 
         if (otherRigidBody)
         {
-            otherRigidBody.velocity = transform.forward * 10.0f;
 
+            //Blast player in opposite direction of them relative to the explosion.
+            Vector3 blastImpact;
+
+            otherRigidBody.velocity = other.transform.up * 10.0f;
+
+            blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 10.0f;
+
+            otherRigidBody.velocity += blastImpact;
             if (player)
             {
 
@@ -97,6 +109,9 @@ public class ExplosionScale : MonoBehaviour
                 {
                 player.addStatusEffect(2, 5.0f * explosionAttributes.freeze);
                 }
+
+            //And finally check if the player died.
+                player.checkIfDead();
             }
         }
 
