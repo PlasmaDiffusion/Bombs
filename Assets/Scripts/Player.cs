@@ -24,6 +24,7 @@ public class Player : MonoBehaviour {
 
 
     private float health;
+    private bool dyingAnimation;
 
     private GameObject throwBar;
 
@@ -96,6 +97,8 @@ public class Player : MonoBehaviour {
         makeBombDefaults(ref newerBomb);
         setInventoryText();
 
+        dyingAnimation = false;
+
         throwingPower = -0.1f;
         health = 100.0f;
         //Status effect stuff
@@ -129,6 +132,22 @@ public class Player : MonoBehaviour {
         //Don't have any input if stunned
         if (stunned > 0.0f) return;
 
+        //Also don't have any input if in the middle of dying :P
+        if (dyingAnimation || transform.position.y < -50.0f)
+        {
+            //Scale the player down
+            Transform mesh = transform.GetChild(2).transform;
+           mesh.localScale = mesh.localScale * 0.9f;
+
+            //Once the player is scaled down detach the camera
+            if (mesh.localScale.y < 0.1f)
+            {
+                transform.GetChild(0).transform.parent = null;
+                Destroy(gameObject);
+            }
+
+            return;
+        }
 
         //Movement input
         float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed * Time.deltaTime;
@@ -141,7 +160,7 @@ public class Player : MonoBehaviour {
         m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
 
         //Jump
-        if ((Input.GetKeyUp(KeyCode.LeftControl) && player1) || Input.GetButtonUp("Confirm" + playerInputString))
+        if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
         {
             if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
         }
@@ -444,11 +463,13 @@ public class Player : MonoBehaviour {
         GameObject newBomb = Instantiate(bomb, forwardOffset + transform.position, transform.rotation);
 
 
-        Vector3 newVelocity = forwardOffset.normalized;
+        Vector3 newVelocity = forwardOffset.normalized * (throwingPower + 0.5f);
         newVelocity.y += 5.0f; //Make it arc upwards a little
 
         //Influence throw based on how long the button was held
         newVelocity.y += throwingPower;
+
+        
 
         newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
 
@@ -510,6 +531,12 @@ public class Player : MonoBehaviour {
     {
         health -= damageAmount;
         healthText.text = health.ToString();
+    }
+
+    public void checkIfDead()
+    {
+        if (health <= 0) dyingAnimation = true;
+
     }
 
     void manageStatusEffects()

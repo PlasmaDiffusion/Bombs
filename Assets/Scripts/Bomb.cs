@@ -53,7 +53,9 @@ public class Bomb : MonoBehaviour {
             {
                 ThrowingPlayer.transform.position = gameObject.transform.position;
                 newExplosionClass.explosionAttributes.damage = 0.0f;
-                Debug.Log("first explosion ");
+                Renderer rend = bombExplosion.GetComponent<Renderer>();
+                rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 1.0f, 0.5f));
+                newExplosionClass.firstBomb = true;
             }
                 
 
