@@ -15,6 +15,8 @@ public class ExplosionScale : MonoBehaviour
 
     public bool firstBomb = false;
 
+    private bool pullTowards = false;
+
     // Use this for initialization
     void Start()
     {
@@ -38,6 +40,15 @@ public class ExplosionScale : MonoBehaviour
         {
             Renderer rend = GetComponent<Renderer>();
             rend.material.SetColor("_Color", new Color(0.6f, 0.0f, 0.0f, 0.5f));
+        }
+
+        if (explosionAttributes.blackhole > 0)
+        {
+            pullTowards = true;
+
+            //Blackhole will deal less damage but also last around longer. (Good for combining with other things like fire!)
+            explosionAttributes.damage = explosionAttributes.damage / 2.0f;
+            explosionAttributes.explosionLifetime += (1.0f * explosionAttributes.blackhole);
         }
     }
 
@@ -69,6 +80,7 @@ public class ExplosionScale : MonoBehaviour
                 }
 
             }
+        
     }
     
     void OnTriggerEnter(Collider other)
@@ -85,7 +97,9 @@ public class ExplosionScale : MonoBehaviour
         if (otherRigidBody)
         {
 
-            //Blast player in opposite direction of them relative to the explosion.
+            //Blast player in opposite direction of them relative to the explosion. (But not if a blackhole bomb)
+            if (!pullTowards)
+            { 
             Vector3 blastImpact;
 
             otherRigidBody.velocity = other.transform.up * 10.0f;
@@ -93,33 +107,58 @@ public class ExplosionScale : MonoBehaviour
             blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 10.0f;
 
             otherRigidBody.velocity += blastImpact;
-            if (player)
-            {
-
-                //Deal some damage
-                player.damage(explosionAttributes.damage);
-
-            //Do extra affects here
-
-            if (explosionAttributes.fire > 0)
-                {
-                player.addStatusEffect(1, 10.0f * explosionAttributes.fire);
-                }
-            if (explosionAttributes.freeze > 0)
-                {
-                player.addStatusEffect(2, 5.0f * explosionAttributes.freeze);
-                }
-
-            //And finally check if the player died.
-                player.checkIfDead();
             }
+
+            if (player) damagePlayer(player);
+
         }
 
 
 
         
     }
+    void OnTriggerStay(Collider other)
+    {
+        //Blackhole
+       if (pullTowards)
+        {
+        Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
+
+        if (otherRigidBody)
+            {
+
+                Vector3 pullForce = Vector3.Normalize(other.transform.position - transform.position) * 0.5f;
+
+                otherRigidBody.velocity -= pullForce;
+
+                
+            }
+        }
+
+    }
+
+    void damagePlayer(Player player)
+    {
+
+        //Deal some damage
+        player.damage(explosionAttributes.damage);
+
+        //Do extra affects here
+
+        if (explosionAttributes.fire > 0)
+        {
+            player.addStatusEffect(1, 10.0f * explosionAttributes.fire);
+        }
+        if (explosionAttributes.freeze > 0)
+        {
+            player.addStatusEffect(2, 5.0f * explosionAttributes.freeze);
+        }
+
+        //And finally check if the player died.
+        player.checkIfDead();
+
+    }
 
 
-    
+
 }

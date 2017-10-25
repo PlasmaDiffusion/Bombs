@@ -150,14 +150,14 @@ public class Player : MonoBehaviour {
         }
 
         //Movement input
-        float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed * Time.deltaTime;
-        float velocityRight = Input.GetAxis("Horizontal" + playerInputString) * m_Speed * Time.deltaTime;
+        float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed;
+        float velocityRight = Input.GetAxis("Horizontal" + playerInputString) * m_Speed;
 
-        //m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
+        m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
 
-        m_Rigidbody.velocity += (transform.forward * velocityForward * 1.5f);
-        m_Rigidbody.velocity += (transform.right * velocityRight * 1.5f);
-        m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+        m_Rigidbody.velocity += (transform.forward * velocityForward);
+        m_Rigidbody.velocity += (transform.right * velocityRight);
+        //m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
 
         //Jump
         if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
@@ -399,9 +399,10 @@ public class Player : MonoBehaviour {
 
     void addMaterial(int newMaterialID, int materialSlot)
     {
-        //Don't do anything if its zero
-        if (materialCount[materialSlot] <= 0) return;
+        //Don't do anything if the material slot is actually empty OR the bomb already has 4 materials added to it
+        if (materialCount[materialSlot] <= 0 || newerBomb.materialsAdded > 3) return;
 
+        newerBomb.materialsAdded += 1;
         //Every material's added effect happens here!
         switch (newMaterialID)
         {
@@ -424,6 +425,14 @@ public class Player : MonoBehaviour {
                 newerBomb.explosionScaleLimit += 2.0f;
 
                 break;
+            case 5:
+                newerBomb.blackhole += 1;
+
+                break;
+            case 6:
+                newerBomb.scatter += 1;
+
+                break;
         }
 
         //Set the flag for the new bomb to now be craftable
@@ -432,6 +441,9 @@ public class Player : MonoBehaviour {
         //Remove material
         materialCount[materialSlot]--;
 
+        //Remove material type from HUD and inventory if all out
+        if (materialCount[materialSlot] == 0) materialID[materialSlot] = 0;
+        
 
         setInventoryText();
 
@@ -512,6 +524,9 @@ public class Player : MonoBehaviour {
         bombToReset.explosionLifetime = 3.0f;
         bombToReset.fire = 0;
         bombToReset.freeze = 0;
+        bombToReset.blackhole = 0;
+        bombToReset.scatter = 0;
+        bombToReset.materialsAdded = 0;
         bombToReset.damage = 25.0f;
     }
 
