@@ -155,14 +155,18 @@ public class Player : MonoBehaviour {
 
         m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
 
-        m_Rigidbody.velocity += (transform.forward * velocityForward);
-        m_Rigidbody.velocity += (transform.right * velocityRight);
-        //m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+        if (!firstThrow) //Lock movement that isn't related to turning if yet to throw spawn bomb
+        { 
+            m_Rigidbody.velocity += (transform.forward * velocityForward);
+            m_Rigidbody.velocity += (transform.right * velocityRight);
+            //m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
 
-        //Jump
-        if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
-        {
-            if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
+            //Jump
+            if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
+            {
+                if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
+            }
+
         }
 
         //Rotation/camera input
@@ -182,6 +186,7 @@ public class Player : MonoBehaviour {
 			m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
 		}
 
+       
 		//------------------------------------------------------------------------------
 
         //Cycle through inventory
@@ -475,7 +480,7 @@ public class Player : MonoBehaviour {
         GameObject newBomb = Instantiate(bomb, forwardOffset + transform.position, transform.rotation);
 
 
-        Vector3 newVelocity = forwardOffset.normalized * (throwingPower + 0.5f);
+        Vector3 newVelocity = forwardOffset.normalized * ((throwingPower * 2.0f) + 0.5f);
         newVelocity.y += 5.0f; //Make it arc upwards a little
 
         //Influence throw based on how long the button was held
@@ -519,8 +524,8 @@ public class Player : MonoBehaviour {
     {
         //Set some stuff to 0 and some specific stuff to 
         bombToReset = default(BombAttributes.BombData);
-        bombToReset.explosionScaleSpeed = new Vector3(4.0f, 4.0f, 4.0f);
-        bombToReset.explosionScaleLimit = 10.0f;
+        bombToReset.explosionScaleSpeed = new Vector3(8.0f, 8.0f, 8.0f);
+        bombToReset.explosionScaleLimit = 15.0f;
         bombToReset.explosionLifetime = 3.0f;
         bombToReset.fire = 0;
         bombToReset.freeze = 0;

@@ -17,6 +17,10 @@ public class ExplosionScale : MonoBehaviour
 
     private bool pullTowards = false;
 
+    public float radius = 10.0F;
+    public float power = 3000.0F;
+
+
     // Use this for initialization
     void Start()
     {
@@ -36,7 +40,7 @@ public class ExplosionScale : MonoBehaviour
         }
 
             //Recolour explosion if bigger radius
-        if (explosionAttributes.explosionScaleLimit > 10.0f)
+        if (explosionAttributes.explosionScaleLimit > 15.0f)
         {
             Renderer rend = GetComponent<Renderer>();
             rend.material.SetColor("_Color", new Color(0.6f, 0.0f, 0.0f, 0.5f));
@@ -83,6 +87,22 @@ public class ExplosionScale : MonoBehaviour
         
     }
     
+    void OnCollisionEnter(Collision other)
+    {
+        Debug.Log("Collision enter");
+
+        Vector3 explosionPos = transform.position;
+        Collider[] colliders = Physics.OverlapSphere(explosionPos, radius);
+        foreach (Collider hit in colliders)
+        {
+            Rigidbody rb = hit.GetComponent<Rigidbody>();
+
+            if (rb != null)
+                rb.AddExplosionForce(power, explosionPos, radius, 3.0F);
+        }
+
+    }
+
     void OnTriggerEnter(Collider other)
     {
         //Do nothing as a first bomb
@@ -106,16 +126,17 @@ public class ExplosionScale : MonoBehaviour
 
             blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 10.0f;
 
-            otherRigidBody.velocity += blastImpact;
+             otherRigidBody.velocity += blastImpact;
+
             }
 
             if (player) damagePlayer(player);
 
         }
 
-
-
         
+
+
     }
     void OnTriggerStay(Collider other)
     {
