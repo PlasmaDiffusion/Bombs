@@ -5,50 +5,106 @@ using UnityEngine;
 public class NodeGenerator : MonoBehaviour
 {
 
-    public GameObject[] AttachedNodes;
-    public GameObject NodeType;
+    public List<GameObject> AttachedNodes;
+    public bool[] exists = {false, false, false, false};
+    public static int numNodes = 0;
+    public const int maxNodes = 10;
+    public GameObject nodeToInitalize;
 
-	// Use this for initialization
-	void Start () {
-		spawnNode(2);
-	}
+    // Use this for initialization
+    void Start()
+    {
+        spawnNode(2);
+    }
 
     void spawnNode(int num)
     {
-        
 
-        for (int i = 0; i < num; i++)
+        if (numNodes <= maxNodes)
         {
-            Vector3 Pos;
-            switch (Random.Range(0, 3))
+            for (int i = 0; i < num; i++)
             {
-                case 0:
-                    Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x,
-                        -gameObject.GetComponent<Renderer>().bounds.size.y / 2, 0);
-                    break;
-                case 1:
-                    Pos = new Vector3(0,
-                        -gameObject.GetComponent<Renderer>().bounds.size.y / 2, gameObject.GetComponent<Renderer>().bounds.size.z);
-                    break;
-                case 2:
-                    Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x,
-                        -gameObject.GetComponent<Renderer>().bounds.size.y, 0);
-                    break;
-                case 3:
-                    Pos = new Vector3(0,
-                        -gameObject.GetComponent<Renderer>().bounds.size.y, 0);
-                    break;
-                default:
-                    Pos = gameObject.GetComponent<Renderer>().bounds.size;
-                    break;
+
+
+                Vector3 Pos;
+
+                switch (Random.Range(0, 3))
+                {
+                    case 0:
+                        if (exists[0] == false)
+                        {
+                            Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x + gameObject.transform.position.x,
+                                -gameObject.GetComponent<Renderer>().bounds.size.y / 2, gameObject.GetComponent<Renderer>().bounds.size.z + gameObject.transform.position.z);
+                            GameObject newnode = Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
+                            AttachedNodes.Add(newnode);
+                            Debug.Log("generate node");
+                            exists[0] = true;
+                        }
+                        else
+                        {
+                            Debug.Log("Fuck");
+                        }
+                        break;
+                    case 1:
+                        if (exists[1] == false)
+                        {
+                            Pos = new Vector3(0 + gameObject.transform.position.x,
+                                -gameObject.GetComponent<Renderer>().bounds.size.y / 2,
+                                gameObject.GetComponent<Renderer>().bounds.size.z + gameObject.transform.position.z);
+                            GameObject newnode = Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
+                            AttachedNodes.Add(newnode);
+                            Debug.Log("generate node");
+                            exists[1] = true;
+                        }
+                        else
+                        {
+                            Debug.Log("Fuck");
+                        }
+                        break;
+                    case 2:
+                        if (exists[2] == false)
+                        {
+                            Pos = new Vector3(gameObject.GetComponent<Renderer>().bounds.size.x + gameObject.transform.position.x,
+                                -gameObject.GetComponent<Renderer>().bounds.size.y, 0 + gameObject.transform.position.z);
+                            GameObject newnode = Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
+                            AttachedNodes.Add(newnode);
+                            Debug.Log("generate node");
+                            exists[2] = true;
+                        }
+                        else
+                        {
+                            Debug.Log("Fuck");
+                        }
+                        break;
+                    case 3:
+                        if (exists[3] == false)
+                        {
+                            Pos = new Vector3(0 + gameObject.transform.position.x,
+                                -gameObject.GetComponent<Renderer>().bounds.size.y, gameObject.transform.position.z);
+                            GameObject newnode = Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
+                            AttachedNodes.Add(newnode);
+                            Debug.Log("generate node");
+                            exists[3] = true;
+                        }
+                        else
+                        {
+                            Debug.Log("Fuck");
+                        }
+                        break;
+                    default:
+                        Pos = gameObject.GetComponent<Renderer>().bounds.size;
+                        break;
+                }
+                numNodes++;
+
             }
-            
-            Instantiate(NodeType, Pos, gameObject.transform.rotation);
         }
+
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 }
