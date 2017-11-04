@@ -16,10 +16,7 @@ public class ExplosionScale : MonoBehaviour
     public bool firstBomb = false;
 
     private bool pullTowards = false;
-
-    public float radius = 10.0F;
-    public float power = 3000.0F;
-
+    
 
     // Use this for initialization
     void Start()
@@ -87,21 +84,6 @@ public class ExplosionScale : MonoBehaviour
         
     }
     
-    void OnCollisionEnter(Collision other)
-    {
-        Debug.Log("Collision enter");
-
-        Vector3 explosionPos = transform.position;
-        Collider[] colliders = Physics.OverlapSphere(explosionPos, radius);
-        foreach (Collider hit in colliders)
-        {
-            Rigidbody rb = hit.GetComponent<Rigidbody>();
-
-            if (rb != null)
-                rb.AddExplosionForce(power, explosionPos, radius, 3.0F);
-        }
-
-    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -119,14 +101,18 @@ public class ExplosionScale : MonoBehaviour
 
             //Blast player in opposite direction of them relative to the explosion. (But not if a blackhole bomb)
             if (!pullTowards)
-            { 
-            Vector3 blastImpact;
+            {
+            
+
 
             otherRigidBody.velocity = other.transform.up * 10.0f;
 
-            blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 10.0f;
+            Vector3 blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 10.0f;
 
-             otherRigidBody.velocity += blastImpact;
+               
+
+
+                otherRigidBody.velocity += blastImpact;
 
             }
 

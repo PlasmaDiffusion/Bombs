@@ -132,8 +132,9 @@ public class Player : MonoBehaviour {
         //Don't have any input if stunned
         if (stunned > 0.0f) return;
 
+
         //Also don't have any input if in the middle of dying :P
-        if (dyingAnimation || transform.position.y < -50.0f)
+        if (dyingAnimation)
         {
             //Scale the player down
             Transform mesh = transform.GetChild(2).transform;
@@ -149,17 +150,32 @@ public class Player : MonoBehaviour {
             return;
         }
 
-        //Movement input
-        float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed;
-        float velocityRight = Input.GetAxis("Horizontal" + playerInputString) * m_Speed;
+        //Player dies if fallen
+        if (transform.position.y < -50.0f)
+        {
+            damage(100.0f);
+            checkIfDead();
+        }
 
-        m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
+        //Movement input
+        float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed) * Time.deltaTime;
+        float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed) * Time.deltaTime;
+
+        if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
+                    m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x / 2.0f, m_Rigidbody.velocity.y, m_Rigidbody.velocity.z / 2.0f);
+
+
+
+        float oldYVel = m_Rigidbody.velocity.y;
 
         if (!firstThrow) //Lock movement that isn't related to turning if yet to throw spawn bomb
         { 
             m_Rigidbody.velocity += (transform.forward * velocityForward);
             m_Rigidbody.velocity += (transform.right * velocityRight);
-            //m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+            m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+
+            //Don't clamp y velocity
+            m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, oldYVel, m_Rigidbody.velocity.z);
 
             //Jump
             if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
@@ -555,8 +571,17 @@ public class Player : MonoBehaviour {
 
     public void checkIfDead()
     {
-        if (health <= 0) dyingAnimation = true;
+        //If the player did die...
+        if (health <= 0)
+        {
+            //Play a dying animation (shrinking)
+            dyingAnimation = true;
 
+            //And check if there's a winner now
+            GameManager manager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+            manager.checkForWinner();
+        }
     }
 
     void manageStatusEffects()
@@ -623,4 +648,9 @@ public class Player : MonoBehaviour {
 
         }
     }
+
+
+
+    //Getters
+    public float getHealth() { return health; }
 }

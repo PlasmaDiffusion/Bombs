@@ -14,6 +14,7 @@ public class NodeGenerator : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Debug.Log("Start Called");
         spawnNode(2);
     }
 
