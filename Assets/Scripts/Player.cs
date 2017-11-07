@@ -48,6 +48,7 @@ public class Player : MonoBehaviour {
     public Text healthText;
     public Image selectedBombImage;
     public Image[] materialImages;
+    public Image[] inventoryImages;
 
 
     public GameObject bombHandlerReference;
@@ -213,11 +214,11 @@ public class Player : MonoBehaviour {
             if (selectedBomb > 4)
             {
                 selectedBomb = 0;
-                selectedBombImage.rectTransform.Translate(-160.0f, 0.0f, 0.0f);
             }
             Debug.Log(selectedBomb.ToString() + " " + playerInputString);
+
+            selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
             
-            selectedBombImage.rectTransform.Translate(32.0f, 0.0f, 0.0f);
         }
         //Cycle through inventory
         else if ((Input.GetKeyUp(KeyCode.Q) && player1) || (Input.GetButtonUp("CycleLeft" + playerInputString)))
@@ -227,11 +228,10 @@ public class Player : MonoBehaviour {
             if (selectedBomb < 0)
             {
                 selectedBomb = 4;
-                selectedBombImage.rectTransform.Translate(160.0f, 0.0f, 0.0f);
             }
             Debug.Log(selectedBomb);
 
-            selectedBombImage.rectTransform.Translate(-32.0f, 0.0f, 0.0f);
+            selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
         }
 
         //Craft a bomb
@@ -427,7 +427,7 @@ public class Player : MonoBehaviour {
         //Every material's added effect happens here!
         switch (newMaterialID)
         {
-
+            
             default:
                 break;
             case 1:
@@ -455,6 +455,11 @@ public class Player : MonoBehaviour {
 
                 break;
         }
+        
+        //Add in id to display image later
+        newerBomb.materialIDs[newerBomb.materialsAdded - 1] = (newMaterialID - 1);
+
+        Debug.Log(newerBomb.materialIDs[newerBomb.materialsAdded - 1]);
 
         //Set the flag for the new bomb to now be craftable
         newerBomb.hasIngredient = true;
@@ -516,7 +521,11 @@ public class Player : MonoBehaviour {
         //Transfer all bomb attributes here from the player's inventory data to the new bomb
         newBombClass.attributes = craftedBombs[selectedBomb];
 
+        //Reset bomb now that it's been used
+
         craftedBombs[selectedBomb].count--;
+
+            makeBombDefaults(ref craftedBombs[selectedBomb]);
 
             setInventoryText();
         }
@@ -549,15 +558,62 @@ public class Player : MonoBehaviour {
         bombToReset.scatter = 0;
         bombToReset.materialsAdded = 0;
         bombToReset.damage = 25.0f;
+
+        bombToReset.materialIDs = new int[4];
+        bombToReset.materialIDs[0] = -1;
+        bombToReset.materialIDs[1] = -1;
+        bombToReset.materialIDs[2] = -1;
+        bombToReset.materialIDs[3] = -1;
     }
 
     void setInventoryText()
     {
         for (int i =0; i < 5; i++)
         {
-            if (craftedBombs[i].count > 0) textForInventory[i].text = craftedBombs[i].count.ToString();
-            else textForInventory[i].text = "";
+           
+                textForInventory[i].text = craftedBombs[i].count.ToString();
 
+
+                  BombCraftingHandler imagesReference;
+
+                imagesReference = GameObject.Find("BombCraftingHandler").GetComponent<BombCraftingHandler>();
+
+
+
+             if (craftedBombs[i].materialsAdded > 0)
+            {
+               inventoryImages[i].color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+               inventoryImages[i].sprite = imagesReference.bombSprites[craftedBombs[i].materialsAdded - 1];
+
+            }
+             else
+            {
+                inventoryImages[i].color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+            }
+
+                //Put materials the bomb has too
+                for (int j = 0; j < 4; j++)
+                {
+                    if (craftedBombs[i].materialIDs.Length != 4) break;
+
+                    Image materialImage = inventoryImages[i].rectTransform.GetChild(j).GetComponent<Image>();
+
+                    if (craftedBombs[i].materialIDs[j] != -1)
+                    {
+                        materialImage.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialImage.sprite = imagesReference.matTextures[craftedBombs[i].materialIDs[j]];
+                    }
+                    else
+                    {
+                        //Make invisible if nothings there
+                        materialImage.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+                        materialImage.sprite = null;
+                    }
+                }
+
+            
+            
 
         }
 

@@ -27,13 +27,18 @@ public class BombAttributes : MonoBehaviour {
         public int smoke;
         public int blackhole;
         public int scatter;
+
+        public int[] materialIDs;
     }
 
 
     // Use this for initialization
     void Start () {
-		
-	}
+
+
+
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
