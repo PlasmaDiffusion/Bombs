@@ -16,7 +16,16 @@ public class ExplosionScale : MonoBehaviour
     public bool firstBomb = false;
 
     private bool pullTowards = false;
-    
+
+
+    public AudioClip explosion1;
+    public AudioClip explosion2;
+    public AudioClip explosion3;
+    public AudioClip explosion4;
+    public AudioClip fireExplosion;
+    public AudioClip iceExplosion;
+    int randExplodeSound;
+
 
     // Use this for initialization
     void Start()
@@ -26,17 +35,17 @@ public class ExplosionScale : MonoBehaviour
         //scaleLengthLimit = 10.0f;
         expanding = true;
         //extraLifetime = 3.0f;
-        
+
 
         particleEmitters = new GameObject[explosionAttributes.smoke];
 
         //Smoke particles
-            for (int i = 0; i < explosionAttributes.smoke; i++)
+        for (int i = 0; i < explosionAttributes.smoke; i++)
         {
             particleEmitters[i] = Instantiate(emitterObjectReferences[0], transform.position, new Quaternion(0.0f, 0.0f, 0.0f, 0.0f));
         }
 
-            //Recolour explosion if bigger radius
+        //Recolour explosion if bigger radius
         if (explosionAttributes.explosionScaleLimit > 15.0f)
         {
             Renderer rend = GetComponent<Renderer>();
@@ -50,6 +59,36 @@ public class ExplosionScale : MonoBehaviour
             //Blackhole will deal less damage but also last around longer. (Good for combining with other things like fire!)
             explosionAttributes.damage = explosionAttributes.damage / 2.0f;
             explosionAttributes.explosionLifetime += (1.0f * explosionAttributes.blackhole);
+        }
+
+        //play bomb sounds depending on bomb type
+        if (explosionAttributes.fire > 0)
+        {
+            AudioSource.PlayClipAtPoint(fireExplosion, transform.position);
+        }
+        else if (explosionAttributes.freeze > 0)
+        {
+            AudioSource.PlayClipAtPoint(iceExplosion, transform.position);
+        }
+        else
+        {
+            randExplodeSound = Random.RandomRange(0, 3);
+            if (randExplodeSound == 0)
+            {
+                AudioSource.PlayClipAtPoint(explosion1, transform.position);
+            }
+            else if (randExplodeSound == 1)
+            {
+                AudioSource.PlayClipAtPoint(explosion2, transform.position);
+            }
+            else if (randExplodeSound == 2)
+            {
+                AudioSource.PlayClipAtPoint(explosion3, transform.position);
+            }
+            else
+            {
+                AudioSource.PlayClipAtPoint(explosion4, transform.position);
+            }
         }
     }
 

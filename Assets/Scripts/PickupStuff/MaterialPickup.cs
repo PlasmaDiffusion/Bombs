@@ -6,9 +6,20 @@ public class MaterialPickup : MonoBehaviour {
 
     private Player player;
     public int materialNo;
-    
-	// Use this for initialization
-	void Start () {
+
+    //sound effects
+    public AudioClip pickup1;
+    public AudioClip pickup2;
+    public AudioClip pickup3;
+    public AudioClip pickup4;
+    public AudioClip pickup5;
+    public AudioClip pickup6;
+    public AudioClip pickup7;
+    public AudioClip pickup8;
+    int randPickupSound;
+
+    // Use this for initialization
+    void Start () {
 	}
 	
 	// Update is called once per frame
@@ -62,6 +73,38 @@ public class MaterialPickup : MonoBehaviour {
                         break;
                     }
                 }
+            }
+
+            //pickup sound effects
+            randPickupSound = Random.RandomRange(0, 7);
+
+            switch (randPickupSound)
+            {
+                case 0:
+                    AudioSource.PlayClipAtPoint(pickup1, transform.position);
+                    break;
+
+                case 1:
+                    AudioSource.PlayClipAtPoint(pickup2, transform.position);
+                    break;
+                case 2:
+                    AudioSource.PlayClipAtPoint(pickup3, transform.position);
+                    break;
+                case 3:
+                    AudioSource.PlayClipAtPoint(pickup4, transform.position);
+                    break;
+                case 4:
+                    AudioSource.PlayClipAtPoint(pickup5, transform.position);
+                    break;
+                case 5:
+                    AudioSource.PlayClipAtPoint(pickup6, transform.position);
+                    break;
+                case 6:
+                    AudioSource.PlayClipAtPoint(pickup7, transform.position);
+                    break;
+                case 7:
+                    AudioSource.PlayClipAtPoint(pickup8, transform.position);
+                    break;
             }
 
             Destroy(gameObject);
