@@ -49,9 +49,11 @@ public class Player : MonoBehaviour {
     public Image selectedBombImage;
     public Image[] materialImages;
 
-
     public GameObject bombHandlerReference;
 
+    //sound effects
+    public AudioClip craftComplete;
+    public AudioClip addStack;
 
     private GameObject bomb;
     private BombCraftingHandler bombHandler;
@@ -229,6 +231,7 @@ public class Player : MonoBehaviour {
 						craftedBombs[i] = newerBomb;
 						craftedBombs[i].count++;
 
+                        AudioSource.PlayClipAtPoint(craftComplete, transform.position);
 
                         setInventoryText();
 
@@ -401,6 +404,8 @@ public class Player : MonoBehaviour {
     {
         //Don't do anything if its zero
         if (materialCount[materialSlot] <= 0) return;
+
+        AudioSource.PlayClipAtPoint(addStack, transform.position);
 
         //Every material's added effect happens here!
         switch (newMaterialID)

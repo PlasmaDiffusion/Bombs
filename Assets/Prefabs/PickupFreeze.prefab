@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 212254452810982628}
   - component: {fileID: 114785818995623520}
   - component: {fileID: 114540818091865090}
+  - component: {fileID: 82738254287641698}
   m_Layer: 0
   m_Name: PickupFreeze
   m_TagString: MaterialPickup
@@ -44,6 +45,86 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &82738254287641698
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1216481553724730}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!114 &114540818091865090
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -67,6 +148,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   materialNo: 1
+  pickup1: {fileID: 8300000, guid: 65d0adfad9ae0a64ba63e9c24cf986d8, type: 3}
+  pickup2: {fileID: 8300000, guid: 24ba2e553cd96c7419b8c7dd4b0a14fc, type: 3}
+  pickup3: {fileID: 8300000, guid: 4e99c3020bf173c468f0d26167c3cd0a, type: 3}
+  pickup4: {fileID: 8300000, guid: 14d60a526041c294eb813d35d668bf22, type: 3}
+  pickup5: {fileID: 8300000, guid: 376bc1a0c2917b349be4c4dc8809032e, type: 3}
+  pickup6: {fileID: 8300000, guid: ce91e0ecfb677aa4c804aa5ac42e5931, type: 3}
+  pickup7: {fileID: 8300000, guid: 5d00a6d814f4a0c48b4295023ad1401f, type: 3}
+  pickup8: {fileID: 8300000, guid: 516196b50d79955419e9cc67261a12cb, type: 3}
 --- !u!114 &114785818995623520
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -131,5 +220,3 @@ SpriteRenderer:
   m_Size: {x: 1.25, y: 1.31}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
