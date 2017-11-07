@@ -38,8 +38,48 @@ public class Bomb : MonoBehaviour {
         {
             time -= 1.0f * Time.deltaTime;
         }
-        else
+        else //Explosion creation code happens here!
         {
+
+            //No natural explosion if scatter bombs
+            if (attributes.scatter > 0)
+            {
+
+                //Scatter bombs
+                for (int i = 0; i < attributes.scatter + 1; i++)
+            {
+                GameObject miniBomb = Instantiate(gameObject, transform.position, transform.rotation);
+
+                //Offset newer bombs a little (randomly)
+                 miniBomb.transform.position += new Vector3(Random.Range(-5.0f, 5.0f), 0.0f, Random.Range(-5.0f, 5.0f));
+                
+                //Make the mini bomes actually mini
+                miniBomb.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                   
+
+                //Make newer bomb components equal to this bomb
+                Bomb miniBombClass = miniBomb.GetComponent<Bomb>();
+                miniBombClass = miniBomb.GetComponent<Bomb>();
+
+                miniBombClass.attributes = attributes;
+
+                miniBombClass.time = 2.0f;
+                miniBombClass.attributes.explosionScaleLimit /= 2.0f;
+
+                //Make scatter bombs half as strong as normal
+                miniBombClass.attributes.damage /= 2.0f;
+
+                //Prevent them from inifnitely creating more
+                miniBombClass.attributes.scatter = 0;
+
+              
+            }
+
+                Destroy(gameObject);
+                return;
+            }
+
+
             //Explode! Create an explosion object and destroy self
             GameObject bombExplosion = Instantiate(newExplosion, transform.position, transform.rotation);
 
@@ -56,9 +96,12 @@ public class Bomb : MonoBehaviour {
                 rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 1.0f, 0.5f));
                 newExplosionClass.firstBomb = true;
             }
-                
+            
 
-            Destroy(gameObject);
+
+
+
+                Destroy(gameObject);
         }
     }
 

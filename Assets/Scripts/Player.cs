@@ -48,6 +48,7 @@ public class Player : MonoBehaviour {
     public Text healthText;
     public Image selectedBombImage;
     public Image[] materialImages;
+    public Image[] inventoryImages;
 
     public GameObject bombHandlerReference;
 
@@ -134,8 +135,9 @@ public class Player : MonoBehaviour {
         //Don't have any input if stunned
         if (stunned > 0.0f) return;
 
+
         //Also don't have any input if in the middle of dying :P
-        if (dyingAnimation || transform.position.y < -50.0f)
+        if (dyingAnimation)
         {
             //Scale the player down
             Transform mesh = transform.GetChild(2).transform;
@@ -151,20 +153,39 @@ public class Player : MonoBehaviour {
             return;
         }
 
-        //Movement input
-        float velocityForward = Input.GetAxis("Vertical" + playerInputString) * m_Speed * Time.deltaTime;
-        float velocityRight = Input.GetAxis("Horizontal" + playerInputString) * m_Speed * Time.deltaTime;
-
-        //m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
-
-        m_Rigidbody.velocity += (transform.forward * velocityForward * 1.5f);
-        m_Rigidbody.velocity += (transform.right * velocityRight * 1.5f);
-        m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
-
-        //Jump
-        if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
+        //Player dies if fallen
+        if (transform.position.y < -50.0f)
         {
-            if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
+            damage(100.0f);
+            checkIfDead();
+        }
+
+        //Movement input
+        float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed) * Time.deltaTime;
+        float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed) * Time.deltaTime;
+
+        if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
+                    m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x / 2.0f, m_Rigidbody.velocity.y, m_Rigidbody.velocity.z / 2.0f);
+
+
+
+        float oldYVel = m_Rigidbody.velocity.y;
+
+        if (!firstThrow) //Lock movement that isn't related to turning if yet to throw spawn bomb
+        { 
+            m_Rigidbody.velocity += (transform.forward * velocityForward);
+            m_Rigidbody.velocity += (transform.right * velocityRight);
+            m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+
+            //Don't clamp y velocity
+            m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, oldYVel, m_Rigidbody.velocity.z);
+
+            //Jump
+            if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
+            {
+                if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
+            }
+
         }
 
         //Rotation/camera input
@@ -184,6 +205,7 @@ public class Player : MonoBehaviour {
 			m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
 		}
 
+       
 		//------------------------------------------------------------------------------
 
         //Cycle through inventory
@@ -194,11 +216,11 @@ public class Player : MonoBehaviour {
             if (selectedBomb > 4)
             {
                 selectedBomb = 0;
-                selectedBombImage.rectTransform.Translate(-160.0f, 0.0f, 0.0f);
             }
             Debug.Log(selectedBomb.ToString() + " " + playerInputString);
+
+            selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
             
-            selectedBombImage.rectTransform.Translate(32.0f, 0.0f, 0.0f);
         }
         //Cycle through inventory
         else if ((Input.GetKeyUp(KeyCode.Q) && player1) || (Input.GetButtonUp("CycleLeft" + playerInputString)))
@@ -208,11 +230,10 @@ public class Player : MonoBehaviour {
             if (selectedBomb < 0)
             {
                 selectedBomb = 4;
-                selectedBombImage.rectTransform.Translate(160.0f, 0.0f, 0.0f);
             }
             Debug.Log(selectedBomb);
 
-            selectedBombImage.rectTransform.Translate(-32.0f, 0.0f, 0.0f);
+            selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
         }
 
         //Craft a bomb
@@ -402,15 +423,18 @@ public class Player : MonoBehaviour {
 
     void addMaterial(int newMaterialID, int materialSlot)
     {
-        //Don't do anything if its zero
-        if (materialCount[materialSlot] <= 0) return;
+        //Don't do anything if the material slot is actually empty OR the bomb already has 4 materials added to it
+        if (materialCount[materialSlot] <= 0 || newerBomb.materialsAdded > 3) return;
+
 
         AudioSource.PlayClipAtPoint(addStack, transform.position);
+
+        newerBomb.materialsAdded += 1;
 
         //Every material's added effect happens here!
         switch (newMaterialID)
         {
-
+            
             default:
                 break;
             case 1:
@@ -429,7 +453,20 @@ public class Player : MonoBehaviour {
                 newerBomb.explosionScaleLimit += 2.0f;
 
                 break;
+            case 5:
+                newerBomb.blackhole += 1;
+
+                break;
+            case 6:
+                newerBomb.scatter += 1;
+
+                break;
         }
+        
+        //Add in id to display image later
+        newerBomb.materialIDs[newerBomb.materialsAdded - 1] = (newMaterialID - 1);
+
+        Debug.Log(newerBomb.materialIDs[newerBomb.materialsAdded - 1]);
 
         //Set the flag for the new bomb to now be craftable
         newerBomb.hasIngredient = true;
@@ -437,6 +474,9 @@ public class Player : MonoBehaviour {
         //Remove material
         materialCount[materialSlot]--;
 
+        //Remove material type from HUD and inventory if all out
+        if (materialCount[materialSlot] == 0) materialID[materialSlot] = 0;
+        
 
         setInventoryText();
 
@@ -468,7 +508,7 @@ public class Player : MonoBehaviour {
         GameObject newBomb = Instantiate(bomb, forwardOffset + transform.position, transform.rotation);
 
 
-        Vector3 newVelocity = forwardOffset.normalized * (throwingPower + 0.5f);
+        Vector3 newVelocity = forwardOffset.normalized * ((throwingPower * 2.0f) + 0.5f);
         newVelocity.y += 5.0f; //Make it arc upwards a little
 
         //Influence throw based on how long the button was held
@@ -488,7 +528,11 @@ public class Player : MonoBehaviour {
         //Transfer all bomb attributes here from the player's inventory data to the new bomb
         newBombClass.attributes = craftedBombs[selectedBomb];
 
+        //Reset bomb now that it's been used
+
         craftedBombs[selectedBomb].count--;
+
+            makeBombDefaults(ref craftedBombs[selectedBomb]);
 
             setInventoryText();
         }
@@ -512,21 +556,71 @@ public class Player : MonoBehaviour {
     {
         //Set some stuff to 0 and some specific stuff to 
         bombToReset = default(BombAttributes.BombData);
-        bombToReset.explosionScaleSpeed = new Vector3(4.0f, 4.0f, 4.0f);
-        bombToReset.explosionScaleLimit = 10.0f;
+        bombToReset.explosionScaleSpeed = new Vector3(8.0f, 8.0f, 8.0f);
+        bombToReset.explosionScaleLimit = 15.0f;
         bombToReset.explosionLifetime = 3.0f;
         bombToReset.fire = 0;
         bombToReset.freeze = 0;
+        bombToReset.blackhole = 0;
+        bombToReset.scatter = 0;
+        bombToReset.materialsAdded = 0;
         bombToReset.damage = 25.0f;
+
+        bombToReset.materialIDs = new int[4];
+        bombToReset.materialIDs[0] = -1;
+        bombToReset.materialIDs[1] = -1;
+        bombToReset.materialIDs[2] = -1;
+        bombToReset.materialIDs[3] = -1;
     }
 
     void setInventoryText()
     {
         for (int i =0; i < 5; i++)
         {
-            if (craftedBombs[i].count > 0) textForInventory[i].text = craftedBombs[i].count.ToString();
-            else textForInventory[i].text = "";
+           
+                textForInventory[i].text = craftedBombs[i].count.ToString();
 
+
+                  BombCraftingHandler imagesReference;
+
+                imagesReference = GameObject.Find("BombCraftingHandler").GetComponent<BombCraftingHandler>();
+
+
+
+             if (craftedBombs[i].materialsAdded > 0)
+            {
+               inventoryImages[i].color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+               inventoryImages[i].sprite = imagesReference.bombSprites[craftedBombs[i].materialsAdded - 1];
+
+            }
+             else
+            {
+                inventoryImages[i].color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+            }
+
+                //Put materials the bomb has too
+                for (int j = 0; j < 4; j++)
+                {
+                    if (craftedBombs[i].materialIDs.Length != 4) break;
+
+                    Image materialImage = inventoryImages[i].rectTransform.GetChild(j).GetComponent<Image>();
+
+                    if (craftedBombs[i].materialIDs[j] != -1)
+                    {
+                        materialImage.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialImage.sprite = imagesReference.matTextures[craftedBombs[i].materialIDs[j]];
+                    }
+                    else
+                    {
+                        //Make invisible if nothings there
+                        materialImage.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+                        materialImage.sprite = null;
+                    }
+                }
+
+            
+            
 
         }
 
@@ -540,8 +634,17 @@ public class Player : MonoBehaviour {
 
     public void checkIfDead()
     {
-        if (health <= 0) dyingAnimation = true;
+        //If the player did die...
+        if (health <= 0)
+        {
+            //Play a dying animation (shrinking)
+            dyingAnimation = true;
 
+            //And check if there's a winner now
+            GameManager manager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+            manager.checkForWinner();
+        }
     }
 
     void manageStatusEffects()
@@ -608,4 +711,9 @@ public class Player : MonoBehaviour {
 
         }
     }
+
+
+
+    //Getters
+    public float getHealth() { return health; }
 }

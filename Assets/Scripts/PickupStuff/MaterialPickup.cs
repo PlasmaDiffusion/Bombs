@@ -63,7 +63,7 @@ public class MaterialPickup : MonoBehaviour {
                     if (player.materialID[i] == 0)
                     {
                         player.materialID[i] = materialNo;
-                        player.materialCount[i] += 1;
+                        player.materialCount[i] = 1;
                         player.setMaterialCountText(i);
 
 
