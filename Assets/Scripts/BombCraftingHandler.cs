@@ -8,6 +8,7 @@ public class BombCraftingHandler : MonoBehaviour {
   //Every special bomb can go here
   public GameObject[] bombs;
   public Sprite[] matTextures;
+    public Sprite[] bombSprites;
 
     // Use this for initialization
     void Start () {

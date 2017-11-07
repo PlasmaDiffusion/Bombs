@@ -6,8 +6,8 @@ public class LerpCamera : MonoBehaviour {
 
     private Transform targetTransform;
 
-    private float t;
-    private bool lerpingRotation;
+    //private float t;
+    //private bool lerpingRotation;
 
 	// Use this for initialization
 	void Start () {
@@ -16,9 +16,9 @@ public class LerpCamera : MonoBehaviour {
 
         //Detach self from player
         transform.parent = null;
-        lerpingRotation = false;
+        //lerpingRotation = false;
 
-        t = 1.0f;
+        //t = 1.0f;
 	}
 	
 	// Update is called once per frame
