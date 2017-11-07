@@ -63,6 +63,11 @@ public class Player : MonoBehaviour {
     public GameObject fireEmitterReference;
     private GameObject childFireEmitter;
 
+    //sound effects
+    public AudioClip craftComplete;
+    public AudioClip addStack;
+
+
     // Use this for initialization
     void Start() {
 
@@ -250,6 +255,7 @@ public class Player : MonoBehaviour {
 						craftedBombs[i] = newerBomb;
 						craftedBombs[i].count++;
 
+                        AudioSource.PlayClipAtPoint(craftComplete, transform.position);
 
                         setInventoryText();
 
@@ -422,6 +428,8 @@ public class Player : MonoBehaviour {
     {
         //Don't do anything if the material slot is actually empty OR the bomb already has 4 materials added to it
         if (materialCount[materialSlot] <= 0 || newerBomb.materialsAdded > 3) return;
+
+        AudioSource.PlayClipAtPoint(addStack, transform.position);
 
         newerBomb.materialsAdded += 1;
         //Every material's added effect happens here!

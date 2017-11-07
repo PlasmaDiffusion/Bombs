@@ -15,6 +15,7 @@ public class Bomb : MonoBehaviour {
 
     public bool First = false;
     public GameObject ThrowingPlayer;
+    public GameManager TimeManager;
 
     public BombAttributes.BombData attributes;
 
