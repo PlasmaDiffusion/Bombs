@@ -15,15 +15,8 @@ public class ExplosionScale : MonoBehaviour
 
     public bool firstBomb = false;
 
-    public AudioClip explosion1;
-    public AudioClip explosion2;
-    public AudioClip explosion3;
-    public AudioClip explosion4;
-    public AudioClip fireExplosion;
-    public AudioClip iceExplosion;
-    int randExplodeSound;
     private bool pullTowards = false;
-    ster
+    
 
     // Use this for initialization
     void Start()
@@ -50,35 +43,6 @@ public class ExplosionScale : MonoBehaviour
             rend.material.SetColor("_Color", new Color(0.6f, 0.0f, 0.0f, 0.5f));
         }
 
-        //play bomb sounds depending on bomb type
-        if (explosionAttributes.fire > 0)
-        {
-            AudioSource.PlayClipAtPoint(fireExplosion, transform.position);
-        }
-        else if (explosionAttributes.freeze > 0)
-        {
-            AudioSource.PlayClipAtPoint(iceExplosion, transform.position);
-        }
-        else
-        {
-            randExplodeSound = Random.RandomRange(0, 3);
-            if (randExplodeSound == 0)
-            {
-                AudioSource.PlayClipAtPoint(explosion1, transform.position);
-            }
-            else if (randExplodeSound == 1)
-            {
-                AudioSource.PlayClipAtPoint(explosion2, transform.position);
-            }
-            else if (randExplodeSound == 2)
-            {
-                AudioSource.PlayClipAtPoint(explosion3, transform.position);
-            }
-            else
-            {
-                AudioSource.PlayClipAtPoint(explosion4, transform.position);
-            }
-
         if (explosionAttributes.blackhole > 0)
         {
             pullTowards = true;
@@ -86,7 +50,6 @@ public class ExplosionScale : MonoBehaviour
             //Blackhole will deal less damage but also last around longer. (Good for combining with other things like fire!)
             explosionAttributes.damage = explosionAttributes.damage / 2.0f;
             explosionAttributes.explosionLifetime += (1.0f * explosionAttributes.blackhole);
-
         }
     }
 
