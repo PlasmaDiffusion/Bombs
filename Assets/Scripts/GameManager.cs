@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour {
     public int time;
     public int endGameTime; //Invisible timer that ends the game and goes to the title screen
 
+   
+
     bool gameEnded;
 
 	// Use this for initialization
@@ -85,7 +87,7 @@ public class GameManager : MonoBehaviour {
         }
 
         //If ones alive then they have won! The player number of the winner was just recorded too.
-        if (aliveCount == 1)
+        if (aliveCount == 1 && !gameEnded)
         {
             switch (winnerIndex)
             {
@@ -107,6 +109,7 @@ public class GameManager : MonoBehaviour {
 
 
             }
+            gameEnded = true;
         }
 
     }
