@@ -923,7 +923,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 4e23cf40b2e0c0147a764b30c420f4ba, type: 2}
+  - {fileID: 2100000, guid: bfe42cc48cb053e49a05604aa02f63fd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2765,6 +2765,9 @@ MonoBehaviour:
   AttachedNodes: []
   exists: 00000000
   nodeToInitalize: {fileID: 1458139631537476}
+  primaryNode: 0
+  life: 0
+  TimeManager: {fileID: 0}
 --- !u!114 &114931693363271484
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -158,7 +158,7 @@ public class ExplosionScale : MonoBehaviour
         }
         else if (player && !pullTowards)
         {
-            Vector3 blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 7.0f;
+            Vector3 blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 5.0f;
             
             player.explosionForce = blastImpact;
 

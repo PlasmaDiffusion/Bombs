@@ -7,6 +7,7 @@ public class Bomb : MonoBehaviour {
     public float time;
     public GameObject newExplosion;
     private bool active;
+    private float distanceToGround;
 
     //Variables that change based on what materials were used
     public float explosionLifetime;
@@ -30,14 +31,21 @@ public class Bomb : MonoBehaviour {
         explosionScaleSpeed = new Vector3(4.0f, 4.0f, 4.0f);
         explosionScaleLimit = 10.0f;
         explosionLifetime = 3.0f;*/
+
+        Collider collider = gameObject.GetComponent<Collider>();
+
+        distanceToGround = collider.bounds.extents.y;
     }
 	
 	// Update is called once per frame
 	void Update () {
 
+
+        //if (isGrounded()) time = 0.0f;
+
         if (time > 0)
         {
-            time -= 1.0f * Time.deltaTime;
+            time -= 0.0f * Time.deltaTime;
         }
         else //Explosion creation code happens here!
         {
@@ -94,7 +102,6 @@ public class Bomb : MonoBehaviour {
             {
                 ThrowingPlayer.transform.position = gameObject.transform.position;
                 newExplosionClass.explosionAttributes.damage = 0.0f;
-                
                 Renderer rend = bombExplosion.GetComponent<Renderer>();
                 rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 1.0f, 0.5f));
                 newExplosionClass.firstBomb = true;
@@ -106,6 +113,21 @@ public class Bomb : MonoBehaviour {
 
                 Destroy(gameObject);
         }
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        time = 0.0f;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        time = 0.0f;
+    }
+
+    bool isGrounded()
+    {
+        return Physics.Raycast(transform.position, -Vector3.up, distanceToGround + 0.1f);
     }
 
 }
