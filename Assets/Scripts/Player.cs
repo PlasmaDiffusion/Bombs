@@ -551,18 +551,6 @@ public class Player : MonoBehaviour {
         //The new bomb is ready to be spawned!
         GameObject newBomb = Instantiate(bomb, forwardOffset + transform.position, transform.rotation);
 
-
-        Vector3 newVelocity = forwardOffset.normalized * ((throwingPower * 2.0f) + 0.5f);
-        newVelocity.y += 5.0f; //Make it arc upwards a little
-
-        //Influence throw based on how long the button was held
-        newVelocity.y += throwingPower;
-
-        
-
-        newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
-
-
         Bomb newBombClass = newBomb.GetComponent<Bomb>();
         newBombClass.ThrowingPlayer = gameObject;
 
@@ -590,8 +578,20 @@ public class Player : MonoBehaviour {
         if (first)
         {
             newBombClass.First = true;
-            newBombClass.time = 2.0f;
+            newBombClass.attributes.MaxRange = 5.0f;
+            newBombClass.time = throwingPower * newBombClass.attributes.MaxRange * 0.5f;
         }
+
+        Vector3 newVelocity = forwardOffset.normalized * ((throwingPower * newBombClass.attributes.MaxRange) + 0.5f);
+        newVelocity.y += 5.0f; //Make it arc upwards a little
+
+        //Influence throw based on how long the button was held
+        newVelocity.y += throwingPower * newBombClass.attributes.MaxRange;
+
+
+
+        newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
+
 
         throwingPower = -0.1f;
     }
@@ -609,6 +609,7 @@ public class Player : MonoBehaviour {
         bombToReset.scatter = 0;
         bombToReset.materialsAdded = 0;
         bombToReset.damage = 25.0f;
+        bombToReset.MaxRange = 1.0f;
 
         bombToReset.materialIDs = new int[4];
         bombToReset.materialIDs[0] = -1;

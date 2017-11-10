@@ -27,6 +27,7 @@ public class BombAttributes : MonoBehaviour {
         public int smoke;
         public int blackhole;
         public int scatter;
+        public float MaxRange;
 
         public int[] materialIDs;
     }
