@@ -96,6 +96,13 @@ MonoBehaviour:
   expanding: 0
   emitterObjectReferences:
   - {fileID: 1437346029219944, guid: 3512088d4f76d5345a4c763b8945a43c, type: 2}
+  firstBomb: 0
+  explosion1: {fileID: 8300000, guid: 66d9c80c59fdfff40a22798dacfded29, type: 3}
+  explosion2: {fileID: 8300000, guid: ef94e46c98af7dc41b687c8e216f5ded, type: 3}
+  explosion3: {fileID: 8300000, guid: ddae5b27d4c1360479a9adc872507c81, type: 3}
+  explosion4: {fileID: 8300000, guid: 3f4c5a1e7c597cb48ade5669072ca018, type: 3}
+  fireExplosion: {fileID: 8300000, guid: d43258b2f780e814bb3f4559bc47da1b, type: 3}
+  iceExplosion: {fileID: 8300000, guid: 5606858a2b2595d4a92915ec1ae4d2c4, type: 3}
 --- !u!135 &135894908858447528
 SphereCollider:
   m_ObjectHideFlags: 1

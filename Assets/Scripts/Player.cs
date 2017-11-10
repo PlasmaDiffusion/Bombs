@@ -8,17 +8,29 @@ public class Player : MonoBehaviour {
     public string playerInputString = ""; //String to be added onto local input
     private bool player1;
 
-    Rigidbody m_Rigidbody;
+    [HideInInspector]
+    public CharacterController controller;
+
     public float m_Speed;   //Public stuffs go in the inspector
     public float m_MaxSpeed;
     public float m_JumpSpeed;
+    public float m_JumpLimit;
     public float m_RotationSpeed;
+    public float m_Gravity;
+    public float m_GravityLimit;
+
     bool canThrow;
     private bool firstThrow = true;
     public float throwRechargeTime;
     private float throwRecharge;
     private float throwingPower;
 
+    private float jumpVelocity = 0.0f;
+    private float jumpOffset = 0.0f;
+    private float velocityUp;
+
+    [HideInInspector]
+    public Vector3 explosionForce;
 
     private bool[] dpadReleased = new bool[4]; //In case of accidental crafting from holding the button more than a frame
 
@@ -76,11 +88,14 @@ public class Player : MonoBehaviour {
         else player1 = false;
 
         //Initialize some stuff
-        m_Rigidbody = gameObject.GetComponent<Rigidbody>(); //Get rigid body for movemnt stuff below
+        //m_Rigidbody = gameObject.GetComponent<Rigidbody>(); //Get rigid body for movemnt stuff below
+        controller = gameObject.GetComponent<CharacterController>();
         canThrow = true;
         bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
         bombHandler = bombHandlerReference.GetComponent<BombCraftingHandler>();
         selectedBomb = 0;
+
+        explosionForce = new Vector3(0.0f, 0.0f, 0.0f);
 
         throwBar = transform.GetChild(1).gameObject;
 
@@ -118,21 +133,6 @@ public class Player : MonoBehaviour {
 
         manageStatusEffects();
 
-        /*if(Input.GetKey(KeyCode.W))
-        {
-            m_Rigidbody.velocity += transform.forward * m_Speed * Time.deltaTime;
-            float l_y = m_Rigidbody.velocity.y;
-            m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
-            m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            m_Rigidbody.velocity += -transform.forward * m_Speed * Time.deltaTime;
-            float l_y = m_Rigidbody.velocity.y;
-            m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
-            m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, l_y, m_Rigidbody.velocity.z);
-        }*/
 
 
         //Don't have any input if stunned
@@ -167,46 +167,89 @@ public class Player : MonoBehaviour {
         float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed) * Time.deltaTime;
         float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed) * Time.deltaTime;
 
-        if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
+       /* if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
                     m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x / 2.0f, m_Rigidbody.velocity.y, m_Rigidbody.velocity.z / 2.0f);
+*/
 
 
-
-        float oldYVel = m_Rigidbody.velocity.y;
+        //float oldYVel = m_Rigidbody.velocity.y;
 
         if (!firstThrow) //Lock movement that isn't related to turning if yet to throw spawn bomb
-        { 
-            m_Rigidbody.velocity += (transform.forward * velocityForward);
-            m_Rigidbody.velocity += (transform.right * velocityRight);
-            m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+        {
+            //m_Rigidbody.velocity += (transform.forward * velocityForward);
+            //m_Rigidbody.velocity += (transform.right * velocityRight);
+            //m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
+
 
             //Don't clamp y velocity
-            m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, oldYVel, m_Rigidbody.velocity.z);
+            //m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, oldYVel, m_Rigidbody.velocity.z);
 
-            //Jump
-            if ((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString))
+            if (velocityUp > -m_Gravity)
+            velocityUp -= (m_Gravity * Time.deltaTime);
+
+
+            //Jump pressed
+            if (((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString)) && controller.isGrounded)
             {
-                if (m_Rigidbody.velocity.y == 0.0f) m_Rigidbody.velocity += new Vector3(0.0f, m_JumpSpeed, 0.0f);
+
+
+                jumpVelocity = m_JumpSpeed;
+                velocityUp = 0.0f;
+                
+
             }
+            
+            //Jump release
+            if ((Input.GetKeyUp(KeyCode.LeftControl) && player1) || Input.GetButtonUp("Confirm" + playerInputString))
+            {
+
+                if (jumpVelocity > 0) jumpVelocity /= 2.0f;
+            }
+
+            if (jumpVelocity > 0.0f) jumpVelocity -= (1.0f);
+            else jumpVelocity = 0.0f;
+
+            if (velocityUp < m_JumpLimit)
+            velocityUp += (jumpVelocity * Time.deltaTime);
+
+           if (explosionForce.x != 0 || explosionForce.y != 0 || explosionForce.z != 0)
+           {
+                explosionForce *= 0.6f;
+            }
+           
+
+            Debug.Log(jumpVelocity);
+
+            //controller.SimpleMove(new Vector3(velocityRight, 0.0f, velocityForward));
+            controller.Move(transform.forward * velocityForward);
+            controller.Move(transform.right * velocityRight);
+            controller.Move(explosionForce);
+            controller.Move(new Vector3(0.0f,velocityUp, 0.0f));
+            
+            
+
+
 
         }
 
         //Rotation/camera input
         float rotate = Input.GetAxis("RightStickH" + playerInputString);
 
-		if (rotate > 0.6f || rotate < -0.6f) m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
+		if (rotate > 0.6f || rotate < -0.6f) transform.Rotate(0, rotate * m_RotationSpeed, 0);//m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
 
 
-		if (Input.GetKey(KeyCode.L) && player1)
+        if (Input.GetKey(KeyCode.L) && player1)
 		{
-			m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
-		}
+            transform.Rotate(0, m_RotationSpeed, 0);
+            //m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
+        }
 
 
 		if (Input.GetKey(KeyCode.J) && player1)
 		{
-			m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
-		}
+            transform.Rotate(0, -m_RotationSpeed, 0);
+            //m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
+        }
 
        
 		//------------------------------------------------------------------------------

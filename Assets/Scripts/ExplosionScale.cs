@@ -134,14 +134,13 @@ public class ExplosionScale : MonoBehaviour
         Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
         Player player = other.gameObject.GetComponent<Player>();
 
+        
 
-        if (otherRigidBody)
+        if (otherRigidBody && !pullTowards)
         {
 
             //Blast player in opposite direction of them relative to the explosion. (But not if a blackhole bomb)
-            if (!pullTowards)
-            {
-            
+
 
 
             otherRigidBody.velocity = other.transform.up * 10.0f;
@@ -153,10 +152,18 @@ public class ExplosionScale : MonoBehaviour
 
                 otherRigidBody.velocity += blastImpact;
 
-            }
+            
+            
+
+        }
+        else if (player && !pullTowards)
+        {
+            Vector3 blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 7.0f;
+            
+            player.explosionForce = blastImpact;
+
 
             if (player) damagePlayer(player);
-
         }
 
         
@@ -165,12 +172,16 @@ public class ExplosionScale : MonoBehaviour
     }
     void OnTriggerStay(Collider other)
     {
+       
         //Blackhole
-       if (pullTowards)
+        if (pullTowards)
         {
-        Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
+            Rigidbody otherRigidBody = other.gameObject.GetComponent<Rigidbody>();
 
-        if (otherRigidBody)
+            Player player = other.gameObject.GetComponent<Player>();
+
+
+            if (otherRigidBody)
             {
 
                 Vector3 pullForce = Vector3.Normalize(other.transform.position - transform.position) * 0.5f;
@@ -179,7 +190,15 @@ public class ExplosionScale : MonoBehaviour
 
                 
             }
+        else if (player)
+            {
+                Vector3 pullForce = Vector3.Normalize(other.transform.position - transform.position) * 0.5f;
+                player.explosionForce = pullForce;
+
+
+            }
         }
+
 
     }
 
