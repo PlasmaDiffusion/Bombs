@@ -9,7 +9,8 @@ public class NodeGenerator : MonoBehaviour
     public List<GameObject> AttachedNodes;
     public bool[] exists = {false, false, false, false};
     public static int numNodes = 0;
-    public const int maxNodes = 200;
+    public const int maxDepth = 6;
+    public static int numDepthReached;
     public GameObject nodeToInitalize;
     public bool primaryNode = false;
     public int life = 0;
@@ -25,13 +26,13 @@ public class NodeGenerator : MonoBehaviour
         if (primaryNode)
             spawnNode(8);
         else
-            spawnNode(2);
+            spawnNode(4);
     }
 
     void spawnNode(int num)
     {
 
-        if (numNodes <= maxNodes)
+        if (numDepthReached <= maxDepth)
         {
             for (int i = 0; i < num; i++)
             {
@@ -52,6 +53,10 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[1] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
+                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            {
+                                numDepthReached++;
+                            }
                             AttachedNodes.Add(newnode);
                             Debug.Log("generate node");
                             exists[0] = true;
@@ -74,6 +79,10 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[0] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
+                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            {
+                                numDepthReached++;
+                            }
                             AttachedNodes.Add(newnode);
                             Debug.Log("generate node");
                             exists[1] = true;
@@ -93,6 +102,10 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[3] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
+                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            {
+                                numDepthReached++;
+                            }
                             AttachedNodes.Add(newnode);
                             Debug.Log("case 2 fire");
                             exists[2] = true;
@@ -112,6 +125,10 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[2] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
+                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            {
+                                numDepthReached++;
+                            }
                             AttachedNodes.Add(newnode);
                             Debug.Log("case 3 fire");
                             exists[3] = true;
