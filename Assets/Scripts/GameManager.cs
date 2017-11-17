@@ -154,7 +154,7 @@ public class GameManager : MonoBehaviour {
     void finishGame()
     {
         //Reset node count
-        NodeGenerator.numNodes = 0;
+        NodeGenerator.numDepthReached = 0;
 
         SceneManager.LoadScene("basicScene");
     }
