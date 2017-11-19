@@ -10,7 +10,7 @@ public class NodeGenerator : MonoBehaviour
     public bool[] exists = {false, false, false, false};
     public static int numNodes = 0;
     public const int maxDepth = 6;
-    public static int numDepthReached;
+    public static int numDepthReached = 0;
     public GameObject nodeToInitalize;
     public bool primaryNode = false;
     public int life = 0;

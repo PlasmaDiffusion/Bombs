@@ -160,7 +160,11 @@ public class GameManager : MonoBehaviour {
         statsManager.writeStats();
 
         //Reset node count
+<<<<<<< HEAD
        //NodeGenerator.numNodes = 0;
+=======
+        NodeGenerator.numDepthReached = 0;
+>>>>>>> 6baff78cdd982e620c5e1b08ab64c25352a2f216
 
         SceneManager.LoadScene("basicScene");
     }
