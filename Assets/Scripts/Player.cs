@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
     [HideInInspector]
     public CharacterController controller;
 
+
     public float m_Speed;   //Public stuffs go in the inspector
     public float m_MaxSpeed;
     public float m_JumpSpeed;
@@ -80,6 +81,8 @@ public class Player : MonoBehaviour {
     public AudioClip addStack;
 
 
+    private ReadAndWriteStats statManager;
+
     // Use this for initialization
     void Start() {
 
@@ -94,6 +97,8 @@ public class Player : MonoBehaviour {
         bombHandlerReference = GameObject.FindGameObjectsWithTag("BombList")[0];
         bombHandler = bombHandlerReference.GetComponent<BombCraftingHandler>();
         selectedBomb = 0;
+
+        statManager = GameObject.Find("GameManager").GetComponent<ReadAndWriteStats>();
 
         explosionForce = new Vector3(0.0f, 0.0f, 0.0f);
 
@@ -218,7 +223,7 @@ public class Player : MonoBehaviour {
             }
            
 
-            Debug.Log(jumpVelocity);
+            //Debug.Log(jumpVelocity);
 
             //controller.SimpleMove(new Vector3(velocityRight, 0.0f, velocityForward));
             controller.Move(transform.forward * velocityForward);
@@ -263,7 +268,7 @@ public class Player : MonoBehaviour {
             {
                 selectedBomb = 0;
             }
-            Debug.Log(selectedBomb.ToString() + " " + playerInputString);
+            //Debug.Log(selectedBomb.ToString() + " " + playerInputString);
 
             selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
             
@@ -277,7 +282,7 @@ public class Player : MonoBehaviour {
             {
                 selectedBomb = 4;
             }
-            Debug.Log(selectedBomb);
+            //Debug.Log(selectedBomb);
 
             selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
         }
@@ -285,7 +290,7 @@ public class Player : MonoBehaviour {
         //Craft a bomb
         if ((Input.GetKey(KeyCode.LeftShift) && player1) || Input.GetButtonUp("Craft" + playerInputString))
 			{
-            Debug.Log(" " + playerInputString);
+            //Debug.Log(" " + playerInputString);
 
 				if (newerBomb.hasIngredient)
 				{
@@ -304,7 +309,9 @@ public class Player : MonoBehaviour {
 
                         //Erase current bomb
                         makeBombDefaults(ref newerBomb);
-                        Debug.Log(craftedBombs[i].count);
+                        //Debug.Log(craftedBombs[i].count);
+
+                        statManager.bombsCrafted++;
 						break;
 
                         }
@@ -451,7 +458,7 @@ public class Player : MonoBehaviour {
         //Access all contact points from collision
         if (collision.contacts.Length > 0)
         {
-            Debug.Log("Collision");
+            //Debug.Log("Collision");
             if (Vector3.Dot(transform.up, collision.contacts[0].normal) > 0.5f)
             {
                 Debug.Log("Grounded");
@@ -483,26 +490,31 @@ public class Player : MonoBehaviour {
                 break;
             case 1:
                 newerBomb.freeze += 1;
+                statManager.iceMaterialsUsed++;
 
                 break;
             case 2:
                 newerBomb.fire += 1;
+                statManager.fireMaterialsUsed++;
                 
                 break;
             case 3:
                 newerBomb.smoke += 1;
+                statManager.smokeMaterialsUsed++;
 
                 break;
             case 4:
                 newerBomb.explosionScaleLimit += 2.0f;
-
+                statManager.explosionMaterialsUsed++;
                 break;
             case 5:
                 newerBomb.blackhole += 1;
+                statManager.blackholeMaterialsUsed++;
 
                 break;
             case 6:
                 newerBomb.scatter += 1;
+                statManager.scatterMaterialsUsed++;
 
                 break;
         }
@@ -533,7 +545,7 @@ public class Player : MonoBehaviour {
     //Make a bomb
     void throwBomb(bool first = false)
     {
-
+        statManager.bombsThrown++;
 
         //First get a few transformations ready for spawning the bomb
         Transform bombTransform = transform;
@@ -543,6 +555,7 @@ public class Player : MonoBehaviour {
 
         bombTransform.position.Set(bombTransform.position.x + forwardOffset.x, bombTransform.position.y + 5.0f, bombTransform.position.z + forwardOffset.z);
 
+        
         
        
         //Now see what bomb the player is going to craft

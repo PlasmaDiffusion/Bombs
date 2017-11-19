@@ -153,8 +153,14 @@ public class GameManager : MonoBehaviour {
     //Exit to menu or whatever
     void finishGame()
     {
+
+        ReadAndWriteStats statsManager = GetComponent<ReadAndWriteStats>();
+
+        statsManager.gamesPlayed++;
+        statsManager.writeStats();
+
         //Reset node count
-        NodeGenerator.numNodes = 0;
+       //NodeGenerator.numNodes = 0;
 
         SceneManager.LoadScene("basicScene");
     }
