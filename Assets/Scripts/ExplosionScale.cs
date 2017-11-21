@@ -136,7 +136,7 @@ public class ExplosionScale : MonoBehaviour
 
         
 
-        if (otherRigidBody && !pullTowards)
+        if (otherRigidBody && !pullTowards) //Unused if we don't go back to rigid bodies
         {
 
             //Blast player in opposite direction of them relative to the explosion. (But not if a blackhole bomb)
@@ -156,14 +156,18 @@ public class ExplosionScale : MonoBehaviour
             
 
         }
-        else if (player && !pullTowards)
+        else if (player && !pullTowards) //For Character Controller
         {
-            Vector3 blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 5.0f;
+            Vector3 blastImpact = Vector3.Normalize(other.transform.position - transform.position) * 1.0f;
             
             player.explosionForce = blastImpact;
 
 
-            if (player) damagePlayer(player);
+            damagePlayer(player);
+        }
+        else if (player) //If blackhole then still damage once
+        {
+            damagePlayer(player);
         }
 
         
@@ -192,8 +196,8 @@ public class ExplosionScale : MonoBehaviour
             }
         else if (player)
             {
-                Vector3 pullForce = Vector3.Normalize(other.transform.position - transform.position) * 0.5f;
-                player.explosionForce = pullForce;
+                Vector3 pullForce = Vector3.Normalize(other.transform.position - transform.position) * (0.1f * explosionAttributes.blackhole);
+                player.explosionForce = -pullForce;
 
 
             }

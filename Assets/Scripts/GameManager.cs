@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
 
     public int time;
+    private int maxTime;
     public int endGameTime; //Invisible timer that ends the game and goes to the title screen
 
    
@@ -15,11 +16,15 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+        maxTime = time;
+
         gameEnded = false;
 
         setTimerText();
 
         StartCoroutine(Timer());
+
     }
 	
 	// Update is called once per frame
@@ -37,6 +42,7 @@ public class GameManager : MonoBehaviour {
             setTimerText();
         }
 
+        if (time == maxTime - 10) removeSpawn();
 
         //After game ended it'll wait a few seconds.
         if (gameEnded)
@@ -53,6 +59,23 @@ public class GameManager : MonoBehaviour {
 
         StartCoroutine(Timer());
 
+    }
+
+    //Remove the spawn platform and player's first throws in case they're yet to use it
+    private void removeSpawn()
+    {
+        Destroy(GameObject.Find("SpawnPlatform").gameObject);
+
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject playerObject = GameObject.Find("Player" + (i + 1).ToString()); //Find each player by name. All players should be named like Player1, Player2, etc...
+
+            //If player exists check if they're dead X_X
+            if (playerObject)
+            {
+                playerObject.GetComponent<Player>().firstThrow = false;
+            }
+         }
     }
 
     public void checkForWinner()
@@ -153,8 +176,17 @@ public class GameManager : MonoBehaviour {
     //Exit to menu or whatever
     void finishGame()
     {
+
+        ReadAndWriteStats statsManager = GetComponent<ReadAndWriteStats>();
+
+        statsManager.gamesPlayed++;
+        statsManager.writeStats();
+
         //Reset node count
-        NodeGenerator.numNodes = 0;
+
+       NodeGenerator.numNodes = 0;
+
+        NodeGenerator.numDepthReached = 0;
 
         SceneManager.LoadScene("basicScene");
     }

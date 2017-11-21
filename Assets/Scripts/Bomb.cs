@@ -105,6 +105,9 @@ public class Bomb : MonoBehaviour {
                 Renderer rend = bombExplosion.GetComponent<Renderer>();
                 rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 1.0f, 0.5f));
                 newExplosionClass.firstBomb = true;
+
+                Player p = ThrowingPlayer.GetComponent<Player>();
+                p.firstThrow = false;
             }
             
 
