@@ -8,6 +8,8 @@ public class Player : MonoBehaviour {
     public string playerInputString = ""; //String to be added onto local input
     private bool player1;
 
+    public GameObject cameraHandler;
+
     [HideInInspector]
     public CharacterController controller;
 
@@ -19,6 +21,9 @@ public class Player : MonoBehaviour {
     public float m_RotationSpeed;
     public float m_Gravity;
     public float m_GravityLimit;
+
+    private float forwardFaceVector;
+    private float rightFaceVector;
 
     bool canThrow;
     [HideInInspector]
@@ -109,7 +114,7 @@ public class Player : MonoBehaviour {
 
         explosionForce = new Vector3(0.0f, 0.0f, 0.0f);
 
-        throwBar = transform.GetChild(1).gameObject;
+        throwBar = cameraHandler.transform.GetChild(0).gameObject;
 
         //Inventory stuff
         for (int i = 0; i < 4; i++)
@@ -161,13 +166,13 @@ public class Player : MonoBehaviour {
         if (dyingAnimation)
         {
             //Scale the player down
-            Transform mesh = transform.GetChild(2).transform;
+            Transform mesh = transform.GetChild(0).transform;
            mesh.localScale = mesh.localScale * 0.9f;
 
             //Once the player is scaled down detach the camera
             if (mesh.localScale.y < 0.1f)
             {
-                transform.GetChild(0).transform.parent = null;
+                cameraHandler.transform.GetChild(1).transform.parent = null;
                 Destroy(gameObject);
             }
 
@@ -185,9 +190,16 @@ public class Player : MonoBehaviour {
         float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed) * Time.deltaTime;
         float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed) * Time.deltaTime;
 
-       /* if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
-                    m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x / 2.0f, m_Rigidbody.velocity.y, m_Rigidbody.velocity.z / 2.0f);
-*/
+        if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = velocityForward; rightFaceVector = velocityRight; }
+
+        /* transform.rotation = new Quaternion(transform.rotation.x,
+             Mathf.LerpAngle(transform.rotation.y, cameraHandler.transform.rotation.y, Time.deltaTime),
+             transform.rotation.z,
+             transform.rotation.w);*/
+
+        /* if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
+                     m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x / 2.0f, m_Rigidbody.velocity.y, m_Rigidbody.velocity.z / 2.0f);
+ */
 
 
         //float oldYVel = m_Rigidbody.velocity.y;
@@ -237,18 +249,22 @@ public class Player : MonoBehaviour {
             //Debug.Log(jumpVelocity);
 
             //controller.SimpleMove(new Vector3(velocityRight, 0.0f, velocityForward));
-            controller.Move(transform.forward * velocityForward);
-            controller.Move(transform.right * velocityRight);
+            controller.Move(cameraHandler.transform.forward * velocityForward);
+            controller.Move(cameraHandler.transform.right * velocityRight);
             applyExplosionForce();
             controller.Move(new Vector3(0.0f,velocityUp, 0.0f));
-            
-            
 
+
+         
 
 
         }
 
-        //Rotation/camera input
+        Vector3 movement = (cameraHandler.transform.forward * forwardFaceVector) + (cameraHandler.transform.right * rightFaceVector);
+        transform.rotation = Quaternion.LookRotation(movement);
+
+
+        /*/Rotation/camera input
         float rotate = Input.GetAxis("RightStickH" + playerInputString);
 
 		if (rotate > 0.6f || rotate < -0.6f) transform.Rotate(0, rotate * m_RotationSpeed, 0);//m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
@@ -265,10 +281,10 @@ public class Player : MonoBehaviour {
 		{
             transform.Rotate(0, -m_RotationSpeed, 0);
             //m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
-        }
+        }*/
 
-       
-		//------------------------------------------------------------------------------
+
+        //------------------------------------------------------------------------------
 
         //Cycle through inventory
         if ((Input.GetKeyUp(KeyCode.E) && player1) || (Input.GetButtonUp("CycleRight" + playerInputString)))
