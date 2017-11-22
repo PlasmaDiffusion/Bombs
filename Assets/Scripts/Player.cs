@@ -34,6 +34,7 @@ public class Player : MonoBehaviour {
 
     private float jumpVelocity = 0.0f;
     private float jumpOffset = 0.0f;
+    private bool jumpTriggerPressed =false;
     private float velocityUp;
 
     [HideInInspector]
@@ -187,60 +188,50 @@ public class Player : MonoBehaviour {
         }
 
         //Movement input
-        float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed) * Time.deltaTime;
-        float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed) * Time.deltaTime;
+        float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed);
+        float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed);
 
-        if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = velocityForward; rightFaceVector = velocityRight; }
-
-        /* transform.rotation = new Quaternion(transform.rotation.x,
-             Mathf.LerpAngle(transform.rotation.y, cameraHandler.transform.rotation.y, Time.deltaTime),
-             transform.rotation.z,
-             transform.rotation.w);*/
-
-        /* if ((Input.GetAxis("Vertical" + playerInputString) == 0.0f && Input.GetAxis("Horizontal" + playerInputString) == 0.0f))
-                     m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x / 2.0f, m_Rigidbody.velocity.y, m_Rigidbody.velocity.z / 2.0f);
- */
+        if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = Input.GetAxis("Vertical" + playerInputString); rightFaceVector = Input.GetAxis("Horizontal" + playerInputString); }
 
 
         //float oldYVel = m_Rigidbody.velocity.y;
 
         if (!firstThrow) //Lock movement that isn't related to turning if yet to throw spawn bomb
         {
-            //m_Rigidbody.velocity += (transform.forward * velocityForward);
-            //m_Rigidbody.velocity += (transform.right * velocityRight);
-            //m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, m_MaxSpeed);
-
-
-            //Don't clamp y velocity
-            //m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, oldYVel, m_Rigidbody.velocity.z);
-
             if (velocityUp > -m_Gravity)
             velocityUp -= (m_Gravity * Time.deltaTime);
 
 
             //Jump pressed
-            if (((Input.GetKeyDown(KeyCode.LeftControl) && player1) || Input.GetButtonDown("Confirm" + playerInputString)) && controller.isGrounded)
+            if (Input.GetAxisRaw("Jump" + playerInputString) != 0 && !jumpTriggerPressed)
+            {
+                jumpTriggerPressed = true;
+                player1 = false; //Once player 1 (keyboard user) uses the left trigger, the keyboard controls get disabled. Otherwise, the game will think the jump button is always being released.
+                    }
+           
+
+            if (((Input.GetKeyDown(KeyCode.LeftControl) && player1) || jumpTriggerPressed) && controller.isGrounded)
             {
 
 
                 jumpVelocity = m_JumpSpeed;
                 velocityUp = 0.0f;
-                
 
             }
-            
-            //Jump release
-            if ((Input.GetKeyUp(KeyCode.LeftControl) && player1) || Input.GetButtonUp("Confirm" + playerInputString))
-            {
 
+            //Jump release
+            if (Input.GetAxisRaw("Jump" + playerInputString) == 0) jumpTriggerPressed = false;
+
+            if ((Input.GetKeyUp(KeyCode.LeftControl) && player1) || (!jumpTriggerPressed  && !player1))
+            {
                 if (jumpVelocity > 0) jumpVelocity /= 2.0f;
             }
 
             if (jumpVelocity > 0.0f) jumpVelocity -= (1.0f);
             else jumpVelocity = 0.0f;
 
-            if (velocityUp < m_JumpLimit)
-            velocityUp += (jumpVelocity * Time.deltaTime);
+            if (velocityUp < m_JumpLimit && Time.deltaTime < 0.02f) //The delta time check prevents the jump from going berserk if the framerate tanks...
+            velocityUp += (jumpVelocity * Time.deltaTime); //Jump velocity increases for every frame the button is held.
 
 
 
@@ -249,8 +240,8 @@ public class Player : MonoBehaviour {
             //Debug.Log(jumpVelocity);
 
             //controller.SimpleMove(new Vector3(velocityRight, 0.0f, velocityForward));
-            controller.Move(cameraHandler.transform.forward * velocityForward);
-            controller.Move(cameraHandler.transform.right * velocityRight);
+            controller.Move(cameraHandler.transform.forward * velocityForward * Time.deltaTime);
+            controller.Move(cameraHandler.transform.right * velocityRight * Time.deltaTime);
             applyExplosionForce();
             controller.Move(new Vector3(0.0f,velocityUp, 0.0f));
 
@@ -261,27 +252,13 @@ public class Player : MonoBehaviour {
         }
 
         Vector3 movement = (cameraHandler.transform.forward * forwardFaceVector) + (cameraHandler.transform.right * rightFaceVector);
-        transform.rotation = Quaternion.LookRotation(movement);
+        //movement = movement.normalized; dont normalize it'll kill the framerate :(
+        Quaternion faceRotation = Quaternion.LookRotation(movement);
+        transform.rotation = faceRotation;
 
 
-        /*/Rotation/camera input
-        float rotate = Input.GetAxis("RightStickH" + playerInputString);
+        //Mathf.LerpAngle(transform.rotation.ToAxisAngle, faceRotation.ToAngleAxis, 1.0f);
 
-		if (rotate > 0.6f || rotate < -0.6f) transform.Rotate(0, rotate * m_RotationSpeed, 0);//m_Rigidbody.AddTorque(transform.up * rotate * m_RotationSpeed);
-
-
-        if (Input.GetKey(KeyCode.L) && player1)
-		{
-            transform.Rotate(0, m_RotationSpeed, 0);
-            //m_Rigidbody.AddTorque(transform.up * m_RotationSpeed);
-        }
-
-
-		if (Input.GetKey(KeyCode.J) && player1)
-		{
-            transform.Rotate(0, -m_RotationSpeed, 0);
-            //m_Rigidbody.AddTorque(transform.up * -m_RotationSpeed);
-        }*/
 
 
         //------------------------------------------------------------------------------
@@ -314,11 +291,12 @@ public class Player : MonoBehaviour {
             selectedBombImage.rectTransform.position = inventoryImages[selectedBomb].rectTransform.position;
         }
 
-        //Craft a bomb
+        /*/Craft a bomb (CRAFTING HAS BEEN STREAMLINED. This is unused now but still here as a reference just in case.)
         if ((Input.GetKey(KeyCode.LeftShift) && player1) || Input.GetButtonUp("Craft" + playerInputString))
 			{
             //Debug.Log(" " + playerInputString);
 
+          
 				if (newerBomb.hasIngredient)
 				{
 
@@ -346,7 +324,7 @@ public class Player : MonoBehaviour {
 				
 				}
 
-			}
+			}*/
         //------------------------------------------------------------------------------
 
         //Prepare to throw bomb
@@ -503,11 +481,11 @@ public class Player : MonoBehaviour {
     void addMaterial(int newMaterialID, int materialSlot)
     {
         //Don't do anything if the material slot is actually empty OR the bomb already has 4 materials added to it
-        if (materialCount[materialSlot] <= 0 || newerBomb.materialsAdded > 3) return;
+        if (materialCount[materialSlot] <= 0 || craftedBombs[selectedBomb].materialsAdded >= 4) return;
 
         AudioSource.PlayClipAtPoint(addStack, transform.position);
 
-        newerBomb.materialsAdded += 1;
+        craftedBombs[selectedBomb].materialsAdded += 1;
         //Every material's added effect happens here!
         switch (newMaterialID)
         {
@@ -515,43 +493,56 @@ public class Player : MonoBehaviour {
             default:
                 break;
             case 1:
-                newerBomb.freeze += 1;
+
+                craftedBombs[selectedBomb].freeze++;
                 statManager.iceMaterialsUsed++;
+
 
                 break;
             case 2:
-                newerBomb.fire += 1;
+                craftedBombs[selectedBomb].fire += 1;
                 statManager.fireMaterialsUsed++;
                 
                 break;
             case 3:
-                newerBomb.smoke += 1;
+                craftedBombs[selectedBomb].smoke += 1;
                 statManager.smokeMaterialsUsed++;
 
                 break;
             case 4:
-                newerBomb.explosionScaleLimit += 2.0f;
+                craftedBombs[selectedBomb].explosionScaleLimit += 2.0f;
                 statManager.explosionMaterialsUsed++;
                 break;
             case 5:
-                newerBomb.blackhole += 1;
+                craftedBombs[selectedBomb].blackhole += 1;
                 statManager.blackholeMaterialsUsed++;
 
                 break;
             case 6:
-                newerBomb.scatter += 1;
+                craftedBombs[selectedBomb].scatter += 1;
                 statManager.scatterMaterialsUsed++;
 
                 break;
         }
-        
+
         //Add in id to display image later
-        newerBomb.materialIDs[newerBomb.materialsAdded - 1] = (newMaterialID - 1);
 
-        Debug.Log(newerBomb.materialIDs[newerBomb.materialsAdded - 1]);
+        //To do this, find an empty slot to add the material onto
+        for (int i = 0; i < 4; i++)
+        {
+           
+            if(craftedBombs[selectedBomb].materialIDs[i] == -1)
+            {
 
+                craftedBombs[selectedBomb].materialIDs[i] = (newMaterialID - 1);
+
+                break;
+            }
+        }
+
+     
         //Set the flag for the new bomb to now be craftable
-        newerBomb.hasIngredient = true;
+        craftedBombs[selectedBomb].hasIngredient = true;
 
         //Remove material
         materialCount[materialSlot]--;
@@ -593,7 +584,7 @@ public class Player : MonoBehaviour {
         Bomb newBombClass = newBomb.GetComponent<Bomb>();
         newBombClass.ThrowingPlayer = gameObject;
 
-        if (craftedBombs[selectedBomb].count > 0)
+        if (craftedBombs[selectedBomb].hasIngredient)
         { 
 
         //Transfer all bomb attributes here from the player's inventory data to the new bomb
@@ -753,7 +744,7 @@ public class Player : MonoBehaviour {
                 
 
                 //Renderer rend = GetComponent<Renderer>();
-                Renderer rend = transform.GetChild(2).GetComponent<Renderer>();
+                Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
                 rend.material.SetColor("_Color", new Color(0.309f, 0.0f, 0.0f));
                 if (!player1)
                 {
@@ -783,7 +774,7 @@ public class Player : MonoBehaviour {
 
                 stunned = duration;
                 //Renderer rend = GetComponent<Renderer>();
-                Renderer rend = transform.GetChild(2).GetComponent<Renderer>();
+                Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
                 rend.material.SetColor("_Color", Color.cyan);
 
                 break;
@@ -809,6 +800,8 @@ public class Player : MonoBehaviour {
         Transform wheel = hudReference.transform.Find("HUD_WheelSprite");
         Transform inventory = hudReference.transform.Find("HUD_InventorySprite");
         Transform healthBar = hudReference.transform.Find("HealthBarImage");
+
+        if (wheel == null || inventory == null || healthBar == null) return;
 
         textForHUD = new Text[4];
 

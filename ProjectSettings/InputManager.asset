@@ -89,8 +89,8 @@ InputManager:
     m_Name: D-PadVertical
     descriptiveName: For using materials
     descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
+    negativeButton: joystick 1 button 0
+    positiveButton: joystick 1 button 3
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -105,8 +105,8 @@ InputManager:
     m_Name: D-PadVerticalP2
     descriptiveName: For using materials
     descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
+    negativeButton: joystick 2 button 0
+    positiveButton: joystick 2 button 3
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -121,8 +121,8 @@ InputManager:
     m_Name: D-PadHorizontal
     descriptiveName: For using materials
     descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
+    negativeButton: joystick 1 button 2
+    positiveButton: joystick 1 button 3
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -137,8 +137,8 @@ InputManager:
     m_Name: D-PadHorizontalP2
     descriptiveName: For using materials
     descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
+    negativeButton: joystick 2 button 2
+    positiveButton: joystick 2 button 3
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -455,6 +455,38 @@ InputManager:
     joyNum: 2
   - serializedVersion: 3
     m_Name: Jump
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 8
+    joyNum: 1
+  - serializedVersion: 3
+    m_Name: JumpP2
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 8
+    joyNum: 2
+  - serializedVersion: 3
+    m_Name: Submit
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 

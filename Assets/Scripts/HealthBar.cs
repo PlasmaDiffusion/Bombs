@@ -22,11 +22,13 @@ public class HealthBar : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        //Hopefully parsing every frame doesn't kill the game :P
-    float width = float.Parse(healthText.text);
+       //Hopefully parsing every frame doesn't kill the game :P
+        float width = float.Parse(healthText.text) + 5.0f;
 
-    rect.sizeDelta = new Vector2(width, rect.sizeDelta.y);
+        rect.sizeDelta = new Vector2(width, rect.sizeDelta.y);
 
+      //Framerate debugging
+      // healthText.text = (1.0f / Time.deltaTime).ToString();
 	}
 
 }
