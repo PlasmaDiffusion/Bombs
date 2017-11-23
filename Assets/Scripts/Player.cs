@@ -10,11 +10,16 @@ public class Player : MonoBehaviour {
 
     public GameObject cameraHandler;
 
+    private GameObject aimingQuad;
+
     [HideInInspector]
     public CharacterController controller;
 
+    //Colour reference for when player is frozen
+    public Color color;
 
-    public float m_Speed;   //Public stuffs go in the inspector
+    //Public stuffs to tweak that go in the inspector
+    public float m_Speed;   
     public float m_MaxSpeed;
     public float m_JumpSpeed;
     public float m_JumpLimit;
@@ -25,6 +30,7 @@ public class Player : MonoBehaviour {
     private float forwardFaceVector;
     private float rightFaceVector;
 
+    //Bomb stuff
     bool canThrow;
     [HideInInspector]
     public bool firstThrow = true;
@@ -32,10 +38,14 @@ public class Player : MonoBehaviour {
     private float throwRecharge;
     private float throwingPower;
 
+    //Velocity movemnt stuff
     private float jumpVelocity = 0.0f;
     private float jumpOffset = 0.0f;
     private bool jumpTriggerPressed =false;
     private float velocityUp;
+
+    private float velocityForward;
+    private float velocityRight;
 
     [HideInInspector]
     public Vector3 explosionForce;
@@ -98,6 +108,11 @@ public class Player : MonoBehaviour {
     void Start() {
 
         findHUD();
+        
+
+        Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
+
+        color = rend.material.color;
 
         //Determine if player 1 for key input purposes. Reverse the values to give keyboard input to player 2.
         if (playerInputString == "") player1 = true;
@@ -116,6 +131,7 @@ public class Player : MonoBehaviour {
         explosionForce = new Vector3(0.0f, 0.0f, 0.0f);
 
         throwBar = cameraHandler.transform.GetChild(0).gameObject;
+        aimingQuad = transform.GetChild(1).gameObject;
 
         //Inventory stuff
         for (int i = 0; i < 4; i++)
@@ -188,8 +204,8 @@ public class Player : MonoBehaviour {
         }
 
         //Movement input
-        float velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed);
-        float velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed);
+        velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed);
+        velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed);
 
         if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = Input.GetAxis("Vertical" + playerInputString); rightFaceVector = Input.GetAxis("Horizontal" + playerInputString); }
 
@@ -253,8 +269,11 @@ public class Player : MonoBehaviour {
 
         Vector3 movement = (cameraHandler.transform.forward * forwardFaceVector) + (cameraHandler.transform.right * rightFaceVector);
         //movement = movement.normalized; dont normalize it'll kill the framerate :(
-        Quaternion faceRotation = Quaternion.LookRotation(movement);
-        transform.rotation = faceRotation;
+        if (movement != Vector3.zero)
+        {
+            Quaternion faceRotation = Quaternion.LookRotation(movement);
+            transform.rotation = faceRotation;
+        }
 
 
         //Mathf.LerpAngle(transform.rotation.ToAxisAngle, faceRotation.ToAngleAxis, 1.0f);
@@ -334,7 +353,12 @@ public class Player : MonoBehaviour {
             if (throwingPower < 2.0f) throwingPower += (2.0f * Time.deltaTime);
             
             throwBar.transform.localScale = new Vector3(throwingPower, 0.1f, 0.1f);
+
             
+            aimingQuad.transform.localPosition = new Vector3(0.0f, -0.5f, throwingPower * 2.3f);
+
+
+
 
         }
         //Debug.Log(Input.GetAxis("Throw" + playerInputString).ToString());
@@ -571,7 +595,7 @@ public class Player : MonoBehaviour {
         Vector3 forwardOffset = transform.forward;
 
         bombTransform.position.Set(bombTransform.position.x + forwardOffset.x, bombTransform.position.y + 5.0f, bombTransform.position.z + forwardOffset.z);
-
+        
         
         
        
@@ -611,7 +635,9 @@ public class Player : MonoBehaviour {
             newBombClass.attributes.MaxRange = 5.0f;
             newBombClass.time = throwingPower * newBombClass.attributes.MaxRange * 0.5f;
         }
-        Vector3 newVelocity = forwardOffset.normalized * ((throwingPower * newBombClass.attributes.MaxRange) + 0.5f);
+        Vector3 newVelocity = forwardOffset.normalized * ((throwingPower * newBombClass.attributes.MaxRange) + 1.1f);
+        newVelocity += (cameraHandler.transform.forward * velocityForward * 0.75f) + (cameraHandler.transform.right * velocityRight * 0.75f);
+
         newVelocity.y += 5.0f; //Make it arc upwards a little
 
         //Influence throw based on how long the button was held
@@ -626,7 +652,7 @@ public class Player : MonoBehaviour {
     {
         //Set some stuff to 0 and some specific stuff to 
         bombToReset = default(BombAttributes.BombData);
-        bombToReset.explosionScaleSpeed = new Vector3(8.0f, 8.0f, 8.0f);
+        bombToReset.explosionScaleSpeed = new Vector3(15.0f, 15.0f, 15.0f);
         bombToReset.explosionScaleLimit = 15.0f;
         bombToReset.explosionLifetime = 3.0f;
         bombToReset.fire = 0;
@@ -745,11 +771,23 @@ public class Player : MonoBehaviour {
 
                 //Renderer rend = GetComponent<Renderer>();
                 Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
+
+                rend.material.color = color;
+                /*
                 rend.material.SetColor("_Color", new Color(0.309f, 0.0f, 0.0f));
-                if (!player1)
+                if (playerInputString == "P2")
+                {
+                    rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 0.317f));
+                    rend.material = material;
+                }
+                if (playerInputString == "P3")
                 {
                     rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 0.317f));
                 }
+                if (playerInputString == "P4")
+                {
+                    rend.material.SetColor("_Color", new Color(1.0f, 1.0f, 0.317f));
+                }*/
 
             }
         }

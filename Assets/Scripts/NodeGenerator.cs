@@ -22,7 +22,7 @@ public class NodeGenerator : MonoBehaviour
     void Start()
     {
         TimeManager = GameObject.FindObjectOfType<GameManager>();
-        Debug.Log("Start Called");
+        
         if (primaryNode)
             spawnNode(8);
         else
@@ -151,11 +151,25 @@ public class NodeGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Warning feedback
+        if (TimeManager.time == life + 5 && !dead)
+        {
+            gameObject.GetComponent<Renderer>().material.SetColor("_Color", new Color(0.8f, 0.0f, 0.0f));
+
+        }
+
+        //Destroy platform
         if (TimeManager.time <= life && !dead)
         {
-            gameObject.AddComponent<Rigidbody>();
-            gameObject.GetComponent<Rigidbody>().useGravity = true;
-            dead = true;
+        //Remove pickups on the platform too
+        Instantiate(GameObject.Find("PickupDestroyer"), transform);
+
+        gameObject.AddComponent<Rigidbody>();
+        gameObject.GetComponent<Rigidbody>().useGravity = true;
+        dead = true;
         }
+
+        
+        
     }
 }
