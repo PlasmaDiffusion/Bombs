@@ -12,8 +12,11 @@ public class Player : MonoBehaviour {
 
     private GameObject aimingQuad;
 
+    private Animator animator;
+
     [HideInInspector]
     public CharacterController controller;
+
 
     //Colour reference for when player is frozen
     public Color color;
@@ -107,10 +110,13 @@ public class Player : MonoBehaviour {
     // Use this for initialization
     void Start() {
 
+
+
         findHUD();
         
+        animator = transform.GetChild(0).GetComponent<Animator>();
 
-        Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
+        Renderer rend = transform.GetChild(0).GetChild(1).GetComponent<SkinnedMeshRenderer>();
 
         color = rend.material.color;
 
@@ -183,7 +189,7 @@ public class Player : MonoBehaviour {
         if (dyingAnimation)
         {
             //Scale the player down
-            Transform mesh = transform.GetChild(0).transform;
+            Transform mesh = transform.GetChild(0).GetChild(1).transform;
            mesh.localScale = mesh.localScale * 0.9f;
 
             //Once the player is scaled down detach the camera
@@ -207,8 +213,10 @@ public class Player : MonoBehaviour {
         velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed);
         velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed);
 
-        if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = Input.GetAxis("Vertical" + playerInputString); rightFaceVector = Input.GetAxis("Horizontal" + playerInputString); }
-
+        if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = Input.GetAxis("Vertical" + playerInputString); rightFaceVector = Input.GetAxis("Horizontal" + playerInputString);
+            animator.SetBool("moving", true);
+        }
+        else animator.SetBool("moving", false);
 
         //float oldYVel = m_Rigidbody.velocity.y;
 
@@ -223,7 +231,8 @@ public class Player : MonoBehaviour {
             {
                 jumpTriggerPressed = true;
                 player1 = false; //Once player 1 (keyboard user) uses the left trigger, the keyboard controls get disabled. Otherwise, the game will think the jump button is always being released.
-                    }
+                
+            }
            
 
             if (((Input.GetKeyDown(KeyCode.LeftControl) && player1) || jumpTriggerPressed) && controller.isGrounded)
@@ -232,6 +241,7 @@ public class Player : MonoBehaviour {
 
                 jumpVelocity = m_JumpSpeed;
                 velocityUp = 0.0f;
+                animator.SetBool("jumping", true);
 
             }
 
@@ -244,14 +254,18 @@ public class Player : MonoBehaviour {
             }
 
             if (jumpVelocity > 0.0f) jumpVelocity -= (1.0f);
-            else jumpVelocity = 0.0f;
+            else
+            {
+                jumpVelocity = 0.0f;
+                
+            }
 
             if (velocityUp < m_JumpLimit && Time.deltaTime < 0.02f) //The delta time check prevents the jump from going berserk if the framerate tanks...
             velocityUp += (jumpVelocity * Time.deltaTime); //Jump velocity increases for every frame the button is held.
 
 
-
-
+            if (velocityUp < 0.0f) animator.SetBool("jumping", false);
+            
 
             //Debug.Log(jumpVelocity);
 
@@ -770,7 +784,7 @@ public class Player : MonoBehaviour {
                 
 
                 //Renderer rend = GetComponent<Renderer>();
-                Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
+                Renderer rend = transform.GetChild(0).GetChild(1).GetComponent<SkinnedMeshRenderer>();
 
                 rend.material.color = color;
                 /*
