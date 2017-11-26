@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour {
 
    public GameObject fireworkEmitter;
 
+    public List<GameObject> TerminalNodes; //Types of nodes that can spawn at the end of a generated map.
+
     bool gameEnded;
 
     private GameObject winnerObject;

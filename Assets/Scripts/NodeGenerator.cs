@@ -9,7 +9,7 @@ public class NodeGenerator : MonoBehaviour
     public List<GameObject> AttachedNodes;
     public bool[] exists = {false, false, false, false};
     public static int numNodes = 0;
-    public const int maxDepth = 6;
+    public const int maxDepth = 4;
     public static int numDepthReached = 0;
     public GameObject nodeToInitalize;
     public bool primaryNode = false;
@@ -17,23 +17,24 @@ public class NodeGenerator : MonoBehaviour
     public GameManager TimeManager;
 
     private bool dead = false;
+    public bool terminalNode = false;
 
     // Use this for initialization
     void Start()
     {
         TimeManager = GameObject.FindObjectOfType<GameManager>();
+        if (!terminalNode)
+        {
+            if (primaryNode)
+                spawnNode(8);
+            else
+                spawnNode(4);
+        }
         
-        if (primaryNode)
-            spawnNode(8);
-        else
-            spawnNode(4);
     }
 
     void spawnNode(int num)
     {
-
-        if (numDepthReached <= maxDepth)
-        {
             for (int i = 0; i < num; i++)
             {
 
@@ -45,6 +46,12 @@ public class NodeGenerator : MonoBehaviour
                     case 0:
                         if (exists[0] == false)
                         {
+                            if (life == (10 * maxDepth))
+                            {
+                                spawnFringe();
+                                numDepthReached++;
+                            }
+
                             Pos = new Vector3(
                                 gameObject.GetComponent<Renderer>().bounds.size.x + gameObject.transform.position.x,
                                 -gameObject.GetComponent<Renderer>().bounds.size.y / 2,
@@ -53,9 +60,9 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[1] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
-                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            if (life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                newnode.GetComponent<NodeGenerator>().terminalNode = true;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("generate node");
@@ -71,6 +78,11 @@ public class NodeGenerator : MonoBehaviour
 
                         if (exists[1] == false)
                         {
+                            if (life == (10 * maxDepth))
+                            {
+                                spawnFringe();
+                                numDepthReached++;
+                            }
                             Pos = new Vector3(
                                 -gameObject.GetComponent<Renderer>().bounds.size.x + gameObject.transform.position.x,
                                 -gameObject.GetComponent<Renderer>().bounds.size.y / 2,
@@ -79,9 +91,9 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[0] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
-                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            if (life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                newnode.GetComponent<NodeGenerator>().terminalNode = true;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("generate node");
@@ -95,6 +107,11 @@ public class NodeGenerator : MonoBehaviour
                     case 2:
                         if (exists[2] == false)
                         {
+                            if (life == (10 * maxDepth))
+                            {
+                                spawnFringe();
+                                numDepthReached++;
+                            }
                             Pos = new Vector3(gameObject.transform.position.x,
                                 -gameObject.GetComponent<Renderer>().bounds.size.y,
                                 gameObject.GetComponent<Renderer>().bounds.size.z + gameObject.transform.position.z);
@@ -102,9 +119,9 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[3] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
-                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            if (life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                newnode.GetComponent<NodeGenerator>().terminalNode = true;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("case 2 fire");
@@ -118,6 +135,11 @@ public class NodeGenerator : MonoBehaviour
                     case 3:
                         if (exists[3] == false)
                         {
+                            if (life == (10 * maxDepth))
+                            {
+                                spawnFringe();
+                                numDepthReached++;
+                            }
                             Pos = new Vector3(gameObject.transform.position.x,
                                 -gameObject.GetComponent<Renderer>().bounds.size.y,
                                 -gameObject.GetComponent<Renderer>().bounds.size.z + gameObject.transform.position.z);
@@ -125,9 +147,9 @@ public class NodeGenerator : MonoBehaviour
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[2] = true;
                             newnode.GetComponent<NodeGenerator>().life += 10;
-                            if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
+                            if (life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                newnode.GetComponent<NodeGenerator>().terminalNode = true;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("case 3 fire");
@@ -144,8 +166,14 @@ public class NodeGenerator : MonoBehaviour
                 numNodes++;
 
             }
-        }
+        
 
+    }
+
+    void spawnFringe()
+    {
+        int toSpawn = Random.Range(0, TimeManager.TerminalNodes.Count);
+        nodeToInitalize = TimeManager.TerminalNodes[toSpawn];
     }
 
     // Update is called once per frame
