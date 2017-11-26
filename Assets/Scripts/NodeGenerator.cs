@@ -10,34 +10,37 @@ public class NodeGenerator : MonoBehaviour
     public bool[] exists = {false, false, false, false};
     public static int numNodes = 0;
     public const int maxDepth = 6;
-    public static int numDepthReached = 0;
+    public const int maxNodes = 2;
     public GameObject nodeToInitalize;
+    
     public bool primaryNode = false;
     public int life = 0;
     public GameManager TimeManager;
 
     private bool dead = false;
+    public int NodeType;
+
 
     // Use this for initialization
     void Start()
     {
         TimeManager = GameObject.FindObjectOfType<GameManager>();
+        if (TimeManager.NumDepthReached <= maxDepth)
+        {
+            if (primaryNode)
+                spawnNode(8);
+            else
+                spawnNode(4);
+        }
         
-        if (primaryNode)
-            spawnNode(8);
-        else
-            spawnNode(4);
     }
 
     void spawnNode(int num)
     {
-
-        if (numDepthReached <= maxDepth)
+        if (TimeManager.NumDepthReached <= maxDepth)
         {
             for (int i = 0; i < num; i++)
             {
-
-
                 Vector3 Pos;
 
                 switch (Random.Range(0, 4))
@@ -45,17 +48,20 @@ public class NodeGenerator : MonoBehaviour
                     case 0:
                         if (exists[0] == false)
                         {
+                            int nodeType = ChooseNodeType();
+                            Collider chosenRenderer;
+                            chosenRenderer = gameObject.GetComponentInChildren<Collider>();
                             Pos = new Vector3(
-                                gameObject.GetComponent<Renderer>().bounds.size.x + gameObject.transform.position.x,
-                                -gameObject.GetComponent<Renderer>().bounds.size.y / 2,
+                                chosenRenderer.bounds.size.x + gameObject.transform.position.x,
+                                chosenRenderer.bounds.size.y / 2,
                                 gameObject.transform.position.z);
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[1] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                TimeManager.NumDepthReached++;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("generate node");
@@ -71,17 +77,23 @@ public class NodeGenerator : MonoBehaviour
 
                         if (exists[1] == false)
                         {
+                            int nodeType = ChooseNodeType();
+                            Collider chosenRenderer;
+                            chosenRenderer = gameObject.GetComponentInChildren<Collider>();
                             Pos = new Vector3(
-                                -gameObject.GetComponent<Renderer>().bounds.size.x + gameObject.transform.position.x,
-                                -gameObject.GetComponent<Renderer>().bounds.size.y / 2,
-                                gameObject.transform.position.z);
+                            -chosenRenderer.bounds.size.x + gameObject.transform.position.x,
+                            chosenRenderer.bounds.size.y / 2,
+                            gameObject.transform.position.z);
+                            
+                            
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
+                            
                             newnode.GetComponent<NodeGenerator>().exists[0] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                TimeManager.NumDepthReached++;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("generate node");
@@ -95,16 +107,19 @@ public class NodeGenerator : MonoBehaviour
                     case 2:
                         if (exists[2] == false)
                         {
+                            int nodeType = ChooseNodeType();
+                            Collider chosenRenderer;
+                            chosenRenderer = gameObject.GetComponentInChildren<Collider>();
                             Pos = new Vector3(gameObject.transform.position.x,
-                                -gameObject.GetComponent<Renderer>().bounds.size.y,
-                                gameObject.GetComponent<Renderer>().bounds.size.z + gameObject.transform.position.z);
+                                chosenRenderer.bounds.size.y / 2,
+                                chosenRenderer.bounds.size.z + gameObject.transform.position.z);
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[3] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                TimeManager.NumDepthReached++;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("case 2 fire");
@@ -118,16 +133,19 @@ public class NodeGenerator : MonoBehaviour
                     case 3:
                         if (exists[3] == false)
                         {
+                            int nodeType = ChooseNodeType();
+                            Collider chosenRenderer;
+                            chosenRenderer = gameObject.GetComponentInChildren<Collider>();
                             Pos = new Vector3(gameObject.transform.position.x,
-                                -gameObject.GetComponent<Renderer>().bounds.size.y,
-                                -gameObject.GetComponent<Renderer>().bounds.size.z + gameObject.transform.position.z);
+                                chosenRenderer.bounds.size.y / 2,
+                                -chosenRenderer.bounds.size.z + gameObject.transform.position.z);
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[2] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (newnode.GetComponent<NodeGenerator>().life == (10 * maxDepth))
                             {
-                                numDepthReached++;
+                                TimeManager.NumDepthReached++;
                             }
                             AttachedNodes.Add(newnode);
                             Debug.Log("case 3 fire");
@@ -148,6 +166,21 @@ public class NodeGenerator : MonoBehaviour
 
     }
 
+    int ChooseNodeType(bool overrideAll = false)
+    {
+        if (!overrideAll)
+        {
+            int selectedMod = Random.Range(0, TimeManager.nodes.Count);
+            nodeToInitalize = TimeManager.nodes[selectedMod];
+            Debug.Log(selectedMod + " was the biome selected");
+            return selectedMod;
+        }
+        else
+        {
+            nodeToInitalize = TimeManager.nodes[2];
+            return 0;
+        }
+    }
     // Update is called once per frame
     void Update()
     {

@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour {
     private int maxTime;
     public int endGameTime; //Invisible timer that ends the game and goes to the title screen
 
-   
+    public List<GameObject> nodes;
+    public int NumDepthReached;
 
     bool gameEnded;
 
@@ -184,9 +185,9 @@ public class GameManager : MonoBehaviour {
 
         //Reset node count
 
-       NodeGenerator.numNodes = 0;
+        NodeGenerator.numNodes = 0;
 
-        NodeGenerator.numDepthReached = 0;
+        NumDepthReached = 0;
 
         SceneManager.LoadScene("basicScene");
     }
