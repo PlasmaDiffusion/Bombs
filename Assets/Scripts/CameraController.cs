@@ -92,7 +92,7 @@ public class CameraController : MonoBehaviour {
             */
         if (camVertical > 0.2f || (player1 && Input.GetKey(KeyCode.I)))
         {
-            if (camVertical == 0.0f) camVertical = -1.0f;
+            if (camVertical == 0.0f) camVertical = -2.0f;
 
             currentPitch += camVertical * camVerticalSpeed * Time.deltaTime;
             currentPitch = Mathf.Clamp(currentPitch, camVerticalMin, camVerticalMax);
@@ -101,7 +101,7 @@ public class CameraController : MonoBehaviour {
         }
         if (camVertical < -0.2f || (player1 && Input.GetKey(KeyCode.K)))
         {
-            if (camVertical == 0.0f) camVertical = 1.0f;
+            if (camVertical == 0.0f) camVertical = 2.0f;
 
             currentPitch += camVertical * camVerticalSpeed * Time.deltaTime;
             currentPitch = Mathf.Clamp(currentPitch, camVerticalMin, camVerticalMax);

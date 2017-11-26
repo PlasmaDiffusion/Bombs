@@ -210,7 +210,8 @@ public class ExplosionScale : MonoBehaviour
     {
 
         //Deal some damage
-        player.damage(explosionAttributes.damage);
+        player.damage(explosionAttributes.damage, true);
+
 
         //Do extra affects here
 

@@ -57,6 +57,7 @@ public class Player : MonoBehaviour {
 
 
     private float health;
+    private float invinciblityFrames;
     private bool dyingAnimation;
 
     private GameObject throwBar;
@@ -162,6 +163,7 @@ public class Player : MonoBehaviour {
 
         throwingPower = -0.1f;
         health = 100.0f;
+        invinciblityFrames = 0.0f;
         //Status effect stuff
         stunned = 0.0f;
         burning = 0.0f;
@@ -737,10 +739,26 @@ public class Player : MonoBehaviour {
 
     }
 
-    public void damage(float damageAmount)
+    public void damage(float damageAmount, bool animate = false)
     {
-        health -= damageAmount;
+        //Damage player if they don't have invinciblity frames. Fire ignores these frames and is occuring if animate was not set to true
+        if (invinciblityFrames <= 0.0f || !animate)
+            health -= damageAmount;
+    
+
         healthText.text = health.ToString();
+
+        //Fire does not trigger the animation or invinciblity frames
+        if (animate)
+        {
+            invinciblityFrames = 0.2f;
+
+
+            animator.SetBool("damaged", true);
+        }
+        
+
+        
     }
 
     public void checkIfDead()
@@ -760,6 +778,10 @@ public class Player : MonoBehaviour {
 
     void manageStatusEffects()
     {
+        //Invinciblity frames for animation
+        if (invinciblityFrames > 0.0f) invinciblityFrames -= Time.deltaTime;
+        else animator.SetBool("damaged", false);
+
         if (burning > 0.0f)
         {
             
@@ -826,7 +848,7 @@ public class Player : MonoBehaviour {
 
                 stunned = duration;
                 //Renderer rend = GetComponent<Renderer>();
-                Renderer rend = transform.GetChild(0).GetComponent<Renderer>();
+                Renderer rend = transform.GetChild(0).GetChild(1).GetComponent<Renderer>();
                 rend.material.SetColor("_Color", Color.cyan);
 
                 break;

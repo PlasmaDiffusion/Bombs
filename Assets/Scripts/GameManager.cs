@@ -10,9 +10,11 @@ public class GameManager : MonoBehaviour {
     private int maxTime;
     public int endGameTime; //Invisible timer that ends the game and goes to the title screen
 
-   
+   public GameObject fireworkEmitter;
 
     bool gameEnded;
+
+    private GameObject winnerObject;
 
 	// Use this for initialization
 	void Start () {
@@ -64,8 +66,10 @@ public class GameManager : MonoBehaviour {
     //Remove the spawn platform and player's first throws in case they're yet to use it
     private void removeSpawn()
     {
-        Destroy(GameObject.Find("SpawnPlatform").gameObject);
+        //Move the platform into the great beyond... It'll come back later...
+       GameObject.Find("SpawnPlatform").gameObject.transform.position = new Vector3(10000.0f, -10000.0f, 0.0f);
 
+        //Everyone can't throw a spawn bomb beyond this point
         for (int i = 0; i < 4; i++)
         {
             GameObject playerObject = GameObject.Find("Player" + (i + 1).ToString()); //Find each player by name. All players should be named like Player1, Player2, etc...
@@ -80,9 +84,8 @@ public class GameManager : MonoBehaviour {
 
     public void checkForWinner()
     {
-
-        int aliveCount = 0;
         int winnerIndex = 0;
+        int aliveCount = 0;
 
         //Check if someone won the game with an array of alive flags
         bool[] alivePlayers = new bool[4];
@@ -101,6 +104,7 @@ public class GameManager : MonoBehaviour {
                 {
                     alivePlayers[i] = true;
                     winnerIndex = i; //If the player is alive, they may be a winner
+                    winnerObject = playerObject;
                 }
             }
             else alivePlayers[i] = false;
@@ -154,6 +158,16 @@ public class GameManager : MonoBehaviour {
 
         time = -1;
         setTimerText();
+
+        if (winner != "Draw")
+        { 
+
+        //Make fire works appear!
+        Instantiate(fireworkEmitter).GetComponent<ParticleInterface>().playerReference = winnerObject;
+
+        GameObject.Find("SpawnPlatform").gameObject.transform.position = new Vector3(winnerObject.transform.position.x, winnerObject.transform.position.y - 10.0f, winnerObject.transform.position.z);
+            GameObject.Find("SpawnPlatform").gameObject.transform.localScale = new Vector3(20.0f, 0.0f, 20.0f);
+        }
     }
 
     void setTimerText()
@@ -188,6 +202,6 @@ public class GameManager : MonoBehaviour {
 
         NodeGenerator.numDepthReached = 0;
 
-        SceneManager.LoadScene("basicScene");
+        SceneManager.LoadScene("Menu");
     }
 }

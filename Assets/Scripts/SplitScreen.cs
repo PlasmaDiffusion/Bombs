@@ -14,6 +14,8 @@ public class SplitScreen : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+        numLocalPlayers = MenuBehavior.numPlayers;
 	
         //1 screen for 1 player
         if (numLocalPlayers <= 1)
