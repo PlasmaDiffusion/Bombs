@@ -59,7 +59,7 @@ public class NodeGenerator : MonoBehaviour
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[1] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (life == (10 * maxDepth))
                             {
                                 newnode.GetComponent<NodeGenerator>().terminalNode = true;
@@ -90,7 +90,7 @@ public class NodeGenerator : MonoBehaviour
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[0] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (life == (10 * maxDepth))
                             {
                                 newnode.GetComponent<NodeGenerator>().terminalNode = true;
@@ -118,7 +118,7 @@ public class NodeGenerator : MonoBehaviour
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[3] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (life == (10 * maxDepth))
                             {
                                 newnode.GetComponent<NodeGenerator>().terminalNode = true;
@@ -146,7 +146,7 @@ public class NodeGenerator : MonoBehaviour
                             GameObject newnode =
                                 Instantiate(nodeToInitalize, Pos, gameObject.transform.rotation) as GameObject;
                             newnode.GetComponent<NodeGenerator>().exists[2] = true;
-                            newnode.GetComponent<NodeGenerator>().life += 10;
+                            newnode.GetComponent<NodeGenerator>().life = this.life + 10;
                             if (life == (10 * maxDepth))
                             {
                                 newnode.GetComponent<NodeGenerator>().terminalNode = true;
