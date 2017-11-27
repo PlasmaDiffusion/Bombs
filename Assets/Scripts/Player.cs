@@ -174,7 +174,7 @@ public class Player : MonoBehaviour {
 
         manageStatusEffects();
 
-
+        animator.SetBool("throwing", false);
 
         //Don't have any input if stunned
         if (stunned > 0.0f) {
@@ -662,6 +662,8 @@ public class Player : MonoBehaviour {
         newBomb.GetComponent<Rigidbody>().velocity = newVelocity;
 
         throwingPower = -0.1f;
+
+        animator.SetBool("throwing", true);
     }
 
     void makeBombDefaults(ref BombAttributes.BombData bombToReset)
@@ -920,4 +922,5 @@ public class Player : MonoBehaviour {
 
     //Getters
     public float getHealth() { return health; }
+    public void playVictoryAnimation() { animator.SetBool("won", true); }
 }

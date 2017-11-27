@@ -169,6 +169,8 @@ public class GameManager : MonoBehaviour {
 
         GameObject.Find("SpawnPlatform").gameObject.transform.position = new Vector3(winnerObject.transform.position.x, winnerObject.transform.position.y - 10.0f, winnerObject.transform.position.z);
             GameObject.Find("SpawnPlatform").gameObject.transform.localScale = new Vector3(20.0f, 0.0f, 20.0f);
+
+            winnerObject.GetComponent<Player>().playVictoryAnimation();
         }
     }
 
