@@ -38,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1216481553724730}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.479, y: -1.823, z: 6.0023937}
+  m_LocalPosition: {x: 13.954931, y: -0.4668405, z: 6.274482}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -108,6 +108,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   materialNo: 1
+  pickup1: {fileID: 0}
+  pickup2: {fileID: 0}
+  pickup3: {fileID: 0}
+  pickup4: {fileID: 0}
+  pickup5: {fileID: 0}
+  pickup6: {fileID: 0}
+  pickup7: {fileID: 0}
+  pickup8: {fileID: 0}
 --- !u!136 &136077296281640480
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -117,7 +125,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.17081219
-  m_Height: 1.3013673
+  m_Radius: 0.25862247
+  m_Height: 1.3629308
   m_Direction: 2
-  m_Center: {x: 0, y: 0.116726756, z: 0.18955827}
+  m_Center: {x: 0, y: 0.15367222, z: 0.15877652}

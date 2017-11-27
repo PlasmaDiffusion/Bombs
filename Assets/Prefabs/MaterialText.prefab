@@ -9,47 +9,46 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1368521081919210}
+  m_RootGameObject: {fileID: 1953994529272524}
   m_IsPrefabParent: 1
---- !u!1 &1368521081919210
+--- !u!1 &1953994529272524
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4331352295922114}
-  - component: {fileID: 136512870238180504}
-  - component: {fileID: 114840767401802588}
-  - component: {fileID: 114633053463835836}
-  - component: {fileID: 33745295334605806}
-  - component: {fileID: 23989154830668982}
+  - component: {fileID: 4922446850940218}
+  - component: {fileID: 23831480720904248}
+  - component: {fileID: 102973838521222900}
+  - component: {fileID: 114560867684510206}
+  - component: {fileID: 114299913211256166}
   m_Layer: 0
-  m_Name: PickupSmoke
-  m_TagString: MaterialPickup
+  m_Name: MaterialText
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4331352295922114
+--- !u!4 &4922446850940218
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1368521081919210}
+  m_GameObject: {fileID: 1953994529272524}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.861127, y: 1.9940176, z: 11.73955}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23989154830668982
+--- !u!23 &23831480720904248
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1368521081919210}
+  m_GameObject: {fileID: 1953994529272524}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -58,7 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 3cbba86e278ae1f4c865cb5a5668102f, type: 2}
+  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -78,54 +77,46 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33745295334605806
-MeshFilter:
+--- !u!102 &102973838521222900
+TextMesh:
+  serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1368521081919210}
-  m_Mesh: {fileID: 4300000, guid: 194839446d6f6c54488d788d97ec0e8f, type: 3}
---- !u!114 &114633053463835836
+  m_GameObject: {fileID: 1953994529272524}
+  m_Text: Material
+  m_OffsetZ: 0
+  m_CharacterSize: 1
+  m_LineSpacing: 1
+  m_Anchor: 0
+  m_Alignment: 0
+  m_TabSize: 4
+  m_FontSize: 12
+  m_FontStyle: 1
+  m_RichText: 1
+  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Color:
+    serializedVersion: 2
+    rgba: 4285032639
+--- !u!114 &114299913211256166
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1368521081919210}
+  m_GameObject: {fileID: 1953994529272524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 451ee0cc9135e6f4eb7dbca02284beb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114560867684510206
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1953994529272524}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 970c4da1efa155f4683ca5535b35c754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114840767401802588
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1368521081919210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0413eb01ea19864f890c9e0c1f921ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  materialNo: 3
-  pickup1: {fileID: 0}
-  pickup2: {fileID: 0}
-  pickup3: {fileID: 0}
-  pickup4: {fileID: 0}
-  pickup5: {fileID: 0}
-  pickup6: {fileID: 0}
-  pickup7: {fileID: 0}
-  pickup8: {fileID: 0}
---- !u!136 &136512870238180504
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1368521081919210}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.4054718
-  m_Height: 0.976699
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.09916204, z: 0}

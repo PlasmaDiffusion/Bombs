@@ -30,8 +30,10 @@ public class MaterialPickup : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
+        //Destroy self if theres a duplicate on top (Weird bug that means players get 2 materials)
+        if (other.gameObject.CompareTag("MaterialPickup")) Destroy(gameObject);
 
-       //Give player item to craft with
+        //Give player item to craft with
 
         if (other.gameObject.CompareTag("Player"))
         {
@@ -107,9 +109,30 @@ public class MaterialPickup : MonoBehaviour {
                     break;
             }
 
+            
+            /*
+            //Spawn text saying what you picked up (unused rn cause it rotates with shit)
+           GameObject textThing = Instantiate(GameObject.Find("BombCraftingHandler").GetComponent<BombCraftingHandler>().materialTextReference,
+            transform);
+            textThing.transform.parent = other.GetComponent<Player>().cameraHandler.transform.GetChild(1);
+            textThing.GetComponent<DestroyOvertime>().setText(materialNo);
+
+            //Only owner can see text
+            if (other.name == "Player1") textThing.layer = 8;
+            if (other.name == "Player2") textThing.layer = 9;
+            if (other.name == "Player3") textThing.layer = 10;
+            if (other.name == "Player4") textThing.layer = 11;
+            */
+            //Now end it all and destroy yourself :(
             Destroy(gameObject);
         }
 
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        //Destroy self if theres a duplicate on top (Weird bug that means players get 2 materials)
+        if (other.gameObject.CompareTag("MaterialPickup")) Destroy(gameObject);
     }
 
     void setMaterialImageByType(Player p, int index)

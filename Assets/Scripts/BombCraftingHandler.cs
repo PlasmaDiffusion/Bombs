@@ -10,6 +10,8 @@ public class BombCraftingHandler : MonoBehaviour {
   public Sprite[] matTextures;
     public Sprite[] bombSprites;
 
+
+    public GameObject materialTextReference;
     // Use this for initialization
     void Start () {
 	}
