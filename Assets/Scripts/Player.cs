@@ -104,7 +104,11 @@ public class Player : MonoBehaviour {
     //sound effects
     public AudioClip craftComplete;
     public AudioClip addStack;
-
+    public AudioClip bombThrow;
+    public AudioClip walking;
+    public AudioClip death;
+    public AudioClip hit;
+    public AudioClip victory;
 
     private ReadAndWriteStats statManager;
 
@@ -208,6 +212,7 @@ public class Player : MonoBehaviour {
         if (transform.position.y < -50.0f)
         {
             damage(100.0f);
+           // AudioSource.PlayClipAtPoint(death, transform.position);
             checkIfDead();
         }
 
@@ -215,10 +220,17 @@ public class Player : MonoBehaviour {
         velocityForward = (Input.GetAxis("Vertical" + playerInputString) * m_Speed);
         velocityRight = (Input.GetAxis("Horizontal" + playerInputString) * m_Speed);
 
-        if (velocityForward != 0.0f || velocityRight != 0.0f) { forwardFaceVector = Input.GetAxis("Vertical" + playerInputString); rightFaceVector = Input.GetAxis("Horizontal" + playerInputString);
+        if (velocityForward != 0.0f || velocityRight != 0.0f)
+        {
+            forwardFaceVector = Input.GetAxis("Vertical" + playerInputString); rightFaceVector = Input.GetAxis("Horizontal" + playerInputString);
             animator.SetBool("moving", true);
+            //AudioSource.PlayClipAtPoint(walking, transform.position);
         }
-        else animator.SetBool("moving", false);
+        else
+        {
+            animator.SetBool("moving", false);
+            //AudioSource.Pause();
+        }
 
         //float oldYVel = m_Rigidbody.velocity.y;
 
@@ -383,6 +395,7 @@ public class Player : MonoBehaviour {
         {
 
             throwBar.transform.localScale = new Vector3(0.0f, 0.1f, 0.1f);
+            AudioSource.PlayClipAtPoint(bombThrow, transform.position);
 
             //Special warp bomb for first throw
             if (firstThrow)
@@ -746,7 +759,6 @@ public class Player : MonoBehaviour {
         //Damage player if they don't have invinciblity frames. Fire ignores these frames and is occuring if animate was not set to true
         if (invinciblityFrames <= 0.0f || !animate)
             health -= damageAmount;
-    
 
         healthText.text = health.ToString();
 
@@ -754,7 +766,7 @@ public class Player : MonoBehaviour {
         if (animate)
         {
             invinciblityFrames = 0.2f;
-
+            AudioSource.PlayClipAtPoint(hit, transform.position);
 
             animator.SetBool("damaged", true);
         }
@@ -768,6 +780,7 @@ public class Player : MonoBehaviour {
         //If the player did die...
         if (health <= 0)
         {
+            AudioSource.PlayClipAtPoint(death, transform.position);
             //Play a dying animation (shrinking)
             dyingAnimation = true;
 
@@ -922,5 +935,9 @@ public class Player : MonoBehaviour {
 
     //Getters
     public float getHealth() { return health; }
-    public void playVictoryAnimation() { animator.SetBool("won", true); }
+    public void playVictoryAnimation()
+    {
+        animator.SetBool("won", true);
+        AudioSource.PlayClipAtPoint(victory, transform.position);
+    }
 }
