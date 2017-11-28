@@ -16,6 +16,8 @@ public class NodeGenerator : MonoBehaviour
     public int life = 0;
     public GameManager TimeManager;
 
+    public AudioClip platformDrop;
+
     private bool dead = false;
     public bool terminalNode = false;
 
@@ -191,6 +193,8 @@ public class NodeGenerator : MonoBehaviour
         {
         //Remove pickups on the platform too
         Instantiate(GameObject.Find("PickupDestroyer"), transform);
+
+        AudioSource.PlayClipAtPoint(platformDrop, transform.position);
 
         gameObject.AddComponent<Rigidbody>();
         gameObject.GetComponent<Rigidbody>().useGravity = true;

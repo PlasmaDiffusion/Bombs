@@ -1098,6 +1098,7 @@ MonoBehaviour:
   primaryNode: 0
   life: 0
   TimeManager: {fileID: 0}
+  platformDrop: {fileID: 8300000, guid: 7d0b828d741b9ed49aa4184c1dc3996b, type: 3}
   terminalNode: 0
 --- !u!114 &114333940428084562
 MonoBehaviour:
