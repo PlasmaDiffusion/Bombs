@@ -182,7 +182,7 @@ public class NodeGenerator : MonoBehaviour
         //Warning feedback
         if (TimeManager.time == life + 5 && !dead)
         {
-            gameObject.GetComponent<Renderer>().material.SetColor("_Color", new Color(0.8f, 0.0f, 0.0f));
+            gameObject.GetComponent<Renderer>().material.SetColor("_Color", gameObject.GetComponent<ParticleControl>().TargetColor);
 
         }
 
