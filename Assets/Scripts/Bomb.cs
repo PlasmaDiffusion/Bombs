@@ -73,7 +73,7 @@ public class Bomb : MonoBehaviour {
                 miniBombClass.attributes = attributes;
 
                 miniBombClass.time = 2.0f;
-                miniBombClass.attributes.explosionScaleLimit /= 2.0f;
+                miniBombClass.attributes.explosionScaleLimit /= 1.5f;
 
                 //Make scatter bombs half as strong as normal
                 miniBombClass.attributes.damage /= 2.0f;

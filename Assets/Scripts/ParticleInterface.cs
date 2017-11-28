@@ -139,7 +139,7 @@ public class ParticleInterface : MonoBehaviour
         {
             ParticleArr[i] = Instantiate<GameObject>(particleObject);
             ParticleArr[i].transform.position = new Vector3 (Random.Range(p.position.x-30.0f, p.position.x + 30.0f),
-                p.position.y - 30.0f,
+                p.position.y - 60.0f,
                 Random.Range(p.position.z-30.0f, p.position.z + 30.0f) * i);
             //else if (type == 2) ParticleArr[i].transform.position = new Vector3(Random.Range(-20.0f, 20.0f), transform.position.y, Random.Range(-20.0f, 20.0f));
             //else ParticleArr[i].transform.position = new Vector3(Random.Range(-20.0f, 20.0f), Random.Range(-20.0f, 20.0f), Random.Range(-20.0f, 20.0f));

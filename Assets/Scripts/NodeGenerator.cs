@@ -182,7 +182,7 @@ public class NodeGenerator : MonoBehaviour
     void Update()
     {
         //Warning feedback
-        if (TimeManager.time == life + 5 && !dead)
+        if (TimeManager.time <= life + 5 && !dead)
         {
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", gameObject.GetComponent<ParticleControl>().TargetColor);
 
@@ -192,13 +192,19 @@ public class NodeGenerator : MonoBehaviour
         if (TimeManager.time <= life && !dead)
         {
         //Remove pickups on the platform too
-        Instantiate(GameObject.Find("PickupDestroyer"), transform);
+        GameObject pickupDestroyer = Instantiate(GameObject.Find("PickupDestroyer"), transform);
+            pickupDestroyer.transform.parent = null;
+            pickupDestroyer.transform.localScale = new Vector3(20.0f, 20.0f, 20.0f);
+            pickupDestroyer.AddComponent<Rigidbody>();
 
         AudioSource.PlayClipAtPoint(platformDrop, transform.position);
 
-        gameObject.AddComponent<Rigidbody>();
-        gameObject.GetComponent<Rigidbody>().useGravity = true;
-        dead = true;
+            //Mesh collider doesn't like rigid bodies... so gone goes the collision
+            Destroy(gameObject.GetComponent<MeshCollider>());
+
+            gameObject.AddComponent<Rigidbody>();
+            gameObject.GetComponent<Rigidbody>().useGravity = true;
+            dead = true;
         }
 
         

@@ -195,11 +195,11 @@ public class Player : MonoBehaviour {
         if (dyingAnimation)
         {
             //Scale the player down
-            Transform mesh = transform.GetChild(0).GetChild(1).transform;
-           mesh.localScale = mesh.localScale * 0.9f;
+
+           transform.localScale = transform.localScale * 0.9f;
 
             //Once the player is scaled down detach the camera
-            if (mesh.localScale.y < 0.1f)
+            if (transform.localScale.y < 0.1f)
             {
                 cameraHandler.transform.GetChild(1).transform.parent = null;
                 Destroy(gameObject);
