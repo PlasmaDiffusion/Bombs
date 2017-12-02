@@ -24,7 +24,7 @@ void Update(Particle a_ParticleArr[], float dt,ParticleAction action)
 	}
 }
 
-
+//This is the function reworked for just lerping colours in the game. Most other functions are part of the particle tutorial/second assignment and aren't used in the game. -------------------------------
 Vec  _DLLExport ColorPicker(int countColor,Vec currentColor,Vec targetColors[],float duration,float runtime,float delta)
 {
 	float current = fmod(runtime,duration);
