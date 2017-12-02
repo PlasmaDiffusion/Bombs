@@ -32,7 +32,7 @@ public class ReadAndWriteStats : MonoBehaviour {
     public static extern IntPtr readDialogue(string fileName);
 
 
-    [DllImport("Stat Logger and Reader")]
+    [DllImport("Logger")]
     public static extern void Log(string CharName, string ItemName, string Value);
 
 
