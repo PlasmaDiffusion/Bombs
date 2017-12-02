@@ -1,0 +1,18 @@
+﻿  ParticleSystem.cpp
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.h(8): warning C4091: '__declspec(dllexport)': ignored on left of 'Vec' when no variable is declared
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.h(15): warning C4091: '__declspec(dllexport)': ignored on left of 'Particle' when no variable is declared
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.cpp(123): warning C4018: '<': signed/unsigned mismatch
+  Fountain.cpp
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.h(8): warning C4091: '__declspec(dllexport)': ignored on left of 'Vec' when no variable is declared
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.h(15): warning C4091: '__declspec(dllexport)': ignored on left of 'Particle' when no variable is declared
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\fountain.cpp(50): warning C4018: '<': signed/unsigned mismatch
+  Fireworks.cpp
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.h(8): warning C4091: '__declspec(dllexport)': ignored on left of 'Vec' when no variable is declared
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\particlesystem.h(15): warning C4091: '__declspec(dllexport)': ignored on left of 'Particle' when no variable is declared
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\fireworks.cpp(48): warning C4018: '<': signed/unsigned mismatch
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\fireworks.cpp(98): warning C4018: '<': signed/unsigned mismatch
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\fireworks.cpp(111): warning C4018: '<': signed/unsigned mismatch
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\fireworks.cpp(123): warning C4018: '<': signed/unsigned mismatch
+c:\users\100580683\documents\unity\ogknuckles-lab5engine-748088299bdc\particles assignment\particlesystem\fireworks.cpp(135): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  ParticleSystem.vcxproj -> C:\Users\100580683\Documents\Unity\OGknuckles-lab5engine-748088299bdc\Particles Assignment\x64\Debug\ParticleSystem.dll
